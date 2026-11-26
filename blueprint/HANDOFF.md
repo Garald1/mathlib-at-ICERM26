@@ -14,6 +14,14 @@ Read, in this order, before doing anything:
 1. `blueprint/WeilExplicitFormula.md`, all of it. §4 records Harald's decisions; §5 the IEANTN plan.
 2. In the IEANTN clone: `CLAUDE.md`, `CONTRIBUTING.md`, `docs/ARCHITECTURE.md`, `docs/NODES.md`, `docs/SOLUTIONS.md`.
 
+## Coordination (added 26 November 2026)
+
+**Another chat is formalizing Montgomery–Vaughan Lemma 12.14 (with Theorem C.5) and Theorem 12.13 itself.** So, until
+Harald says otherwise: in Task 2, compile only the IEANTN node drafts, not `FourierIntegral.lean` or
+`DigammaFourier.lean`; and do not start Tasks 3, 4 or 7. Tasks 1, 5 and 6 are inputs that the other chat's proof of
+12.13 needs, but are not 12.13 or 12.14 themselves; check with Harald before starting 5 or 6 that the other chat is
+not doing them too.
+
 ## Ground rules
 
 - **The book is the ground truth for statements.** Harald has the PDF of MV; ask him for its path. Do not quote
@@ -77,7 +85,8 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
 
 ## Task 2 — compile the draft statements
 
-1. Library: add `blueprint/drafts/FourierIntegral.lean` and `blueprint/drafts/DigammaFourier.lean` as
+1. **On hold (see Coordination).** Library: add `blueprint/drafts/FourierIntegral.lean` and
+   `blueprint/drafts/DigammaFourier.lean` as
    `RiemannStieltjes.FourierIntegral` and `RiemannStieltjes.DigammaFourier` (fix imports and module syntax). They are
    statements with `sorry`. **First audit each statement** against the blueprint (§2, parts A and B) and, for B4 and
    B5, against MV Theorem C.5 and Lemma 12.14 in the PDF; then make them elaborate.
@@ -94,12 +103,16 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
 
 ## Task 3 — Part A: the Fourier integral theorem
 
+**On hold (see Coordination): possibly done in the other chat.**
+
 In the library, prove A1–A6 of the blueprint (`FourierIntegral.lean`) by the route of `DirichletJordan.lean`:
 Fejér's theorem for Fourier integrals, Hardy's Tauberian theorem for integrals reduced to the discrete
 `tendsto_sum_range_of_tendsto_cesaroMean`, and `FourierTransform.fourier_bounded_variation`. No `sorry` left.
 **Stop and report.**
 
 ## Task 4 — Part B: the digamma function, Theorem C.5, Lemma 12.14
+
+**On hold (see Coordination): Lemma 12.14 and Theorem C.5 are being done in the other chat.**
 
 In the library. B1 is already proved in IEANTN's `Solutions/GammaAsymptotics.v2/` (`digamma_eq_gaussSum`, for
 Re s > 0): reuse it, crediting its authors in the file header. B4 needs a residue theorem on rectangles (Task 5); do
@@ -121,6 +134,9 @@ Lemma 6.3 route); a polynomial bound for ζ in σ ≥ 1/8; the pigeonhole choice
 project. **Stop and report** at the end, and also whenever an approach is abandoned.
 
 ## Task 7 — a solution for `WeilExplicitFormula.v1`
+
+**On hold (see Coordination): Theorem 12.13 is being done in the other chat**, whose proof should end up as this
+node's solution (ideally proving the node's statement as drafted, or one that implies it immediately).
 
 Blueprint C1–C3, D1, E, F, G, using the library at a pinned commit and the node's imports as hypotheses. Then run
 Comparator locally (`scripts/verify-comparator.sh`, as `CONTRIBUTING.md` describes). The official verification
