@@ -1,0 +1,27 @@
+ .gitignore                                         |    2 +
+ Mathlib/Analysis/BoxIntegral/Basic.lean            |  205 +++
+ Mathlib/Analysis/BoxIntegral/Box/Ioc.lean          |  209 +++
+ .../Analysis/BoxIntegral/Partition/Additive.lean   |  126 ++
+ Mathlib/Analysis/BoxIntegral/Partition/Basic.lean  |   26 +-
+ Mathlib/Analysis/BoxIntegral/Partition/Dual.lean   |  161 ++
+ Mathlib/Analysis/BoxIntegral/Partition/Filter.lean |  102 ++
+ .../Analysis/BoxIntegral/Partition/Measure.lean    |   10 +
+ Mathlib/Analysis/BoxIntegral/Partition/Onedim.lean |  490 ++++++
+ .../BoxIntegral/Partition/OrderedDivision.lean     |  886 ++++++++++
+ Mathlib/Analysis/BoxIntegral/Partition/Split.lean  |   37 +-
+ Mathlib/Analysis/BoxIntegral/Stieltjes/Basic.lean  | 1739 ++++++++++++++++++++
+ .../BoxIntegral/Stieltjes/ChangeVariables.lean     |  378 +++++
+ Mathlib/Analysis/BoxIntegral/Stieltjes/Defs.lean   |  364 ++++
+ .../BoxIntegral/Stieltjes/DirichletJordan.lean     |  343 ++++
+ .../Analysis/BoxIntegral/Stieltjes/Fourier.lean    |  216 +++
+ .../BoxIntegral/Stieltjes/IntegrationByParts.lean  |  152 ++
+ .../Analysis/BoxIntegral/Stieltjes/Measure.lean    |  136 ++
+ .../Analysis/BoxIntegral/Stieltjes/Riemann.lean    |  463 ++++++
+ .../BoxIntegral/Stieltjes/RiemannStieltjesSum.lean |  198 +++
+ Mathlib/Analysis/BoxIntegral/Stieltjes/Sum.lean    |  387 +++++
+ Mathlib/Analysis/BoxIntegral/Stieltjes/Unused.lean |  329 ++++
+ Mathlib/Analysis/Fourier/Fejer.lean                |  471 ++++++
+ Mathlib/Analysis/Fourier/FejerKernel.lean          |  391 +++++
+ Mathlib/Analysis/SpecificLimits/Cesaro.lean        |  259 +++
+ Scratch.lean                                       |   58 +
+ 26 files changed, 8136 insertions(+), 2 deletions(-)

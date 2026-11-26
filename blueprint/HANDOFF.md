@@ -51,12 +51,25 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
 1. Ask Harald to confirm the repository name (proposed: `Garald1/RiemannStieltjes`, private at first) and create it.
 2. Lake package `RiemannStieltjes`: `lean-toolchain` identical to IEANTN's; `require mathlib` at IEANTN's Mathlib
    commit, as a full 40-character hash.
-3. Find exactly what branch `dirichlet-jordan` adds to Mathlib: fetch `master` of the fork and run
-   `git diff --stat master...dirichlet-jordan` (or against the Mathlib commit the fork started from). Expected:
-   `Mathlib/Analysis/BoxIntegral/Stieltjes/*.lean`, `Mathlib/Analysis/Fourier/Fejer.lean`,
-   `Mathlib/Analysis/Fourier/FejerKernel.lean`, `Mathlib/Analysis/SpecificLimits/Cesaro.lean`. If the branch also
-   *modifies* existing Mathlib files, carry those changes as new lemmas in the package. Ask Harald before dropping
-   `Stieltjes/Unused.lean`.
+3. What to port. Relative to upstream Mathlib commit `09370b01` (the last upstream merge into the workshop branch,
+   18 May 2026; the full `git diff --stat` is in `blueprint/port/diffstat-against-mathlib-09370b01.txt`), branch
+   `dirichlet-jordan` does the following, and nothing else:
+   - **adds 18 files** (about 7,600 lines):
+     `Mathlib/Analysis/BoxIntegral/Box/Ioc.lean`,
+     `Mathlib/Analysis/BoxIntegral/Partition/{Dual,Onedim,OrderedDivision}.lean`,
+     `Mathlib/Analysis/BoxIntegral/Stieltjes/{Defs,Basic,Riemann,RiemannStieltjesSum,IntegrationByParts,Measure,
+     ChangeVariables,Sum,Fourier,DirichletJordan,Unused}.lean`,
+     `Mathlib/Analysis/Fourier/{Fejer,FejerKernel}.lean`, `Mathlib/Analysis/SpecificLimits/Cesaro.lean`
+     (also `Scratch.lean`, not to be ported);
+   - **adds about 500 lines of lemmas to six existing Mathlib files**: `Mathlib/Analysis/BoxIntegral/Basic.lean` and
+     `Mathlib/Analysis/BoxIntegral/Partition/{Additive,Basic,Filter,Measure,Split}.lean`. A package cannot edit
+     Mathlib, so these go into new files of the package, one per original file, with unchanged names (unless a name
+     now clashes with something Mathlib has added since: then report it). The additions are in
+     `blueprint/port/additions-to-mathlib-files.patch`. The only deleted lines (two) are inside a proof in
+     `Partition/Basic.lean` and need not be carried over.
+
+   `Stieltjes/Unused.lean` says of itself that it is not in use: ask Harald before dropping it. Keep every file's
+   copyright header and author list as it is.
 4. Module names `RiemannStieltjes.<path as in Mathlib>`; keep namespaces and declaration names unchanged, so that the
    library can later go back into Mathlib without renaming.
 5. Port to the newer Mathlib with the smallest changes that work; record each kind of change in `PORTING.md`.
