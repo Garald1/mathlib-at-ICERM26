@@ -136,19 +136,25 @@ Plan: exactly the route of `DirichletJordan.lean`: Fejér for integrals + Hardy'
   from Jensen's inequality [MV, Lemma 6.1] = `AnalyticOnNhd.sum_divisor_le` (**M**,
   `Analysis/Complex/JensenFormula.lean`) applied to $(s-1)\zeta(s)$ on a disc centred at $2+i(T+\frac12)$ (and the
   symmetry $\rho\mapsto1-\bar\rho$). Inputs: $|\zeta(s)|\ll|t|$ for $\sigma\ge\frac18$, $|t|\ge1$ (**P** has such bounds,
-  via `Zeta0EqZeta` in `ZetaBounds.lean`), and $|\zeta(2+it)|\ge\zeta(4)/\zeta(2)$.
+  via `Zeta0EqZeta` in `ZetaBounds.lean`), and $|\zeta(2+it)|\ge2-\zeta(2)>0.35$. Detailed proof:
+  `blueprint/proofs/GoodHeights.md`, §2.
 - **C5** [MV, Lemma 6.3] (Landau): $f$ analytic on $|z|\le1$, $|f|\le M$, $f(0)\ne0$, $0<r<R<1$ ⇒ for $|z|\le r$,
   $\frac{f'}f(z)=\sum_{|z_k|\le R}\frac1{z-z_k}+O_{r,R}(\log\frac M{|f(0)|})$. **new**, from Borel–Carathéodory
-  [MV, Lemma 6.2] = `Complex.borelCaratheodory` (**M**) and `MeromorphicOn.extract_zeros_poles` (**M**).
+  [MV, Lemma 6.2] = `Complex.borelCaratheodory` (**M**) and `MeromorphicOn.extract_zeros_poles` (**M**). Prove it with
+  $1+\log\frac M{|f(0)|}$ in the error term, which is all that is needed and avoids the degenerate case
+  $M=|f(0)|$; proof step by step in `blueprint/proofs/GoodHeights.md`, (L).
 - **C6** Local partial fractions: for $|t|\ge2$, $\frac12\le\sigma\le2$:
   $\frac{\zeta'}{\zeta}(s)=\sum_{|\gamma-t|\le1}\frac1{s-\rho}+O(\log|t|)$. **new** (C5 on discs centred at $2+it$;
   compare [MV, Lemma 12.1], which MV derive from the Hadamard product, via (10.29) and Corollary 10.14, remarking that
-  the method of their Lemma 6.4 would also do).
+  the method of their Lemma 6.4 would also do). `proofs/GoodHeights.md` §3 proves the version with the sum over
+  $|\rho-(2+it)|\le\frac{27}{16}$, which is what C7 uses; the two sums differ by $O(\log|t|)$ there.
 - **C7** Good heights ([MV, Lemma 12.2], which is the conclusion `lemma_12_2` of the new node `ZetaGoodHeights.v1`,
   then transferred to $\xi'/\xi$): for $T\ge2$ there is $T_1\in[T,T+1]$ with
   $|\frac{\xi'}{\xi}(\sigma\pm iT_1)|\le C(\log T)^2$ for $-1\le\sigma\le2$, and no zero has ordinate $\pm T_1$.
   **new**: pigeonhole with C4 gives $|T_1-\gamma|\gg1/\log T$; then C6, C3, B3 for $\frac12\le\sigma\le2$, and C1
-  ($\frac{\xi'}{\xi}(s)=-\frac{\xi'}{\xi}(1-s)$, conjugation) for $-1\le\sigma\le\frac12$.
+  ($\frac{\xi'}{\xi}(s)=-\frac{\xi'}{\xi}(1-s)$, conjugation) for $-1\le\sigma\le\frac12$. The conclusion
+  `lemma_12_2` itself is about $\zeta'/\zeta$, as in [MV]; for $-1\le\sigma<\frac12$ it is proved from the functional
+  equation of $\zeta'/\zeta$ (IEANTN `ZetaLogDeriv.v1`, proved) and B3. Detailed proof: `proofs/GoodHeights.md` §4.
 
 ### D. Contour integration on rectangles
 
@@ -242,6 +248,13 @@ our path — which is also what an unconditional result means.
 | `ContourIntegration.v1.residue_theorem_rectangle` | D1, B4, G4 | inactive, none-yet | reactivate; prove |
 | `GammaAsymptotics.v1.digamma_sub_log_isBigO` | B3 | awaiting-solution | prove (Gauss series already proved for v2) |
 | `ZetaGoodHeights.v1.theorem_10_13`, `.lemma_12_2` | C4, C7, G2, G6 | new node (draft) | state; prove |
+
+`ZetaGoodHeights.v1` in turn imports `ZetaZeroes.v1.finite_zeroes_on_compact` (both conclusions),
+`ZetaLogDeriv.v1.logDeriv_functional_equation` (proved, lean-comparator) and
+`GammaAsymptotics.v1.digamma_sub_log_isBigO` (awaiting-solution) — the last two for `lemma_12_2` only, on
+$-1\le\sigma<\frac12$. So until `GammaAsymptotics.v1` has a solution, `lemma_12_2` and everything after it are
+conditional on it. Its proofs are written out in `blueprint/proofs/GoodHeights.md`, whose Appendix A derives
+`GammaAsymptotics.v1` from the Gauss series of the v2 solution.
 
 Not imported: `ZeroCount.v1` (Rosser's explicit count) and `ZetaHadamard.v1` (MV Corollary 10.14), both resting on the
 literature: the route here does not need the Hadamard product.

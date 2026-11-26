@@ -116,9 +116,8 @@ Fejér's theorem for Fourier integrals, Hardy's Tauberian theorem for integrals 
 
 In the library. B1 is already proved in IEANTN's `Solutions/GammaAsymptotics.v2/` (`digamma_eq_gaussSum`, for
 Re s > 0): reuse it, crediting its authors in the file header. B4 needs a residue theorem on rectangles (Task 5); do
-that first, or prove what B4 needs for its specific function. Then write a solution for the IEANTN node
-`GammaAsymptotics.v1` (in `ieantn/Solutions/GammaAsymptotics.v1/`, following `docs/SOLUTIONS.md` and
-`CONTRIBUTING.md`; it may require the library at a pinned commit). **Stop and report.**
+that first, or prove what B4 needs for its specific function. (The solution for the IEANTN node
+`GammaAsymptotics.v1` has moved to Task 6, which needs it.) **Stop and report.**
 
 ## Task 5 — a solution for `ContourIntegration.v1`
 
@@ -130,8 +129,17 @@ Mathlib's Cauchy theorem on rectangles and its annulus invariance of circle inte
 
 Blueprint C4–C7: Jensen's inequality (`AnalyticOnNhd.sum_divisor_le`) on MV's disc for Theorem 10.13; the local
 expansion of ζ'/ζ over nearby zeros from `Complex.borelCaratheodory` and `MeromorphicOn.extract_zeros_poles` (MV's
-Lemma 6.3 route); a polynomial bound for ζ in σ ≥ 1/8; the pigeonhole choice of T₁. The most delicate part of the
-project. **Stop and report** at the end, and also whenever an approach is abandoned.
+Lemma 6.3 route); a polynomial bound for ζ in σ ≥ 1/8; the pigeonhole choice of T₁; the functional equation of ζ'/ζ
+(IEANTN `ZetaLogDeriv.v1`) for −1 ≤ σ < 1/2. **The proofs are written out step by step, with the Mathlib names
+checked at the pin, in `blueprint/proofs/GoodHeights.md`; follow it.** The most delicate part of the project.
+
+`lemma_12_2` imports `GammaAsymptotics.v1.digamma_sub_log_isBigO`, which has no solution yet. Appendix A of
+`GoodHeights.md` derives it from `digamma_eq_gaussSum` (IEANTN `Solutions/GammaAsymptotics.v2/Analytic.lean`, by
+T. Tao; reuse it with credit). Write that as a solution for `GammaAsymptotics.v1` (in
+`ieantn/Solutions/GammaAsymptotics.v1/`, following `docs/SOLUTIONS.md` and `CONTRIBUTING.md`), first, unless Harald
+says the other chat is doing it.
+
+**Stop and report** at the end, and also whenever an approach is abandoned.
 
 ## Task 7 — a solution for `WeilExplicitFormula.v1`
 
@@ -157,7 +165,8 @@ go in `STATUS.md` and the commit messages.
 > horizontal sides). The first imports `ZetaZeroes.v1` (`finite_zeroes_on_compact`, `no_nontrivial_zeroes_left`,
 > `zeroes_off_axis_in_strip`), `ContourIntegration.v1`, `GammaAsymptotics.v1` and `ZetaGoodHeights.v1`; it does not
 > use `ZetaHadamard.v1`, since the planned proofs go through Jensen's inequality and the Borel–Carathéodory lemma
-> rather than the Hadamard product.
+> rather than the Hadamard product. The second imports `ZetaZeroes.v1` (`finite_zeroes_on_compact`),
+> `ZetaLogDeriv.v1` and `GammaAsymptotics.v1`.
 >
 > This needs `ContourIntegration.v1` reactivated; I plan to supply solutions for it and for `GammaAsymptotics.v1` (the
 > latter from the Gauss series already proved in `Solutions/GammaAsymptotics.v2`). The solutions would rest on a

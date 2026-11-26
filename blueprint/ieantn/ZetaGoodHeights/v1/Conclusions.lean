@@ -40,10 +40,13 @@ the half of the lemma that a contour argument actually uses.
 
 Not as in Montgomery–Vaughan, who obtain Lemma 12.2 from Lemma 12.1 and so from the Hadamard
 product (their Theorem 10.12 and Corollary 10.14; IEANTN's `ZetaHadamard.v1`, which rests on the
-literature). Instead: Theorem 10.13 from Jensen's inequality (Mathlib's `AnalyticOnNhd.sum_divisor_le`)
-on the disc of Montgomery–Vaughan's proof; then the local expansion of `ζ'/ζ` over nearby zeroes from
-the Borel–Carathéodory lemma (`Complex.borelCaratheodory`) and `MeromorphicOn.extract_zeros_poles`,
-as in their Lemma 6.3; then a pigeonhole choice of `T₁`.
+literature), but by the route they mention as an alternative, the method of their Lemma 6.4.
+Theorem 10.13 from Jensen's inequality (Mathlib's `AnalyticOnNhd.sum_divisor_le`) applied to
+`riemannZeta₁ = (s - 1) ζ(s)` on the disc of Montgomery–Vaughan's proof; then, for `1/2 ≤ σ ≤ 2`, the
+local expansion of `ζ'/ζ` over nearby zeroes from the Borel–Carathéodory lemma
+(`Complex.borelCaratheodory`) and `MeromorphicOn.extract_zeros_poles`, as in their Lemma 6.3, with a
+pigeonhole choice of `T₁`; for `-1 ≤ σ < 1/2`, the functional equation of `ζ'/ζ`
+(`ZetaLogDeriv.v1`) and the digamma bound (`GammaAsymptotics.v1`).
 -/
 
 namespace ZetaGoodHeights.v1
