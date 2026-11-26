@@ -275,8 +275,8 @@ theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)
   rcases em (∃ i, a i = b i) with (⟨i, hi⟩ | hne)
   · -- First we sort out the trivial case `∃ i, a i = b i`.
     rw [volume_pi, ← setIntegral_congr_set Measure.univ_pi_Ioc_ae_eq_Icc]
-    have hi' : Ioc (a i) (b i) = ∅ := Ioc_eq_empty hi.not_lt
-    have : (pi Set.univ fun j => Ioc (a j) (b j)) = ∅ := univ_pi_eq_empty hi'
+    have hi' : Set.Ioc (a i) (b i) = ∅ := Ioc_eq_empty hi.not_lt
+    have : (pi Set.univ fun j => Set.Ioc (a j) (b j)) = ∅ := univ_pi_eq_empty hi'
     rw [this, setIntegral_empty, sum_eq_zero]
     rintro j -
     rcases eq_or_ne i j with (rfl | hne)

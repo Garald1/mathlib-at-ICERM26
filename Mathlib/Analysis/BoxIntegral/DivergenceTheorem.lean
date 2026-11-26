@@ -178,7 +178,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
         `volume J ≤ (2 * δ) ^ (n + 1)` is small, and the difference of the integrals is small
         because each of the integrals is close to `volume (J.face i) • f x`.
         TODO: there should be a shorter and more readable way to formalize this simple proof. -/
-    have : ∀ᶠ δ in 𝓝[>] (0 : ℝ), δ ∈ Ioc (0 : ℝ) (1 / 2) ∧
+    have : ∀ᶠ δ in 𝓝[>] (0 : ℝ), δ ∈ Set.Ioc (0 : ℝ) (1 / 2) ∧
         (∀ᵉ (y₁ ∈ closedBall x δ ∩ (Box.Icc I)) (y₂ ∈ closedBall x δ ∩ (Box.Icc I)),
               ‖f y₁ - f y₂‖ ≤ ε / 2) ∧ (2 * δ) ^ (n + 1) * ‖f' x (Pi.single i 1)‖ ≤ ε / 2 := by
       refine .and (Ioc_mem_nhdsGT one_half_pos) (.and ?_ ?_)
