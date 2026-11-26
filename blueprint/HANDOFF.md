@@ -33,7 +33,10 @@ Read, in this order, before doing anything:
 
 ## Layout
 
-Work in one parent directory, say `~/lean/weil`:
+Work in `~/Documents/lean/weil` (Harald's Lean directory is `~/Documents/lean`). Harald starts Claude Code there,
+after cloning this branch into `plan/` with
+`git clone --depth 1 -b weil-explicit-formula https://github.com/Garald1/mathlib-at-icerm26.git plan`.
+If he already has clones of the repositories below elsewhere in `~/Documents/lean`, ask before making new ones.
 - `plan/` — this branch (`weil-explicit-formula` of `Garald1/mathlib-at-icerm26`). Besides the blueprint, it contains
   the Riemann–Stieltjes files, since it is based on `dirichlet-jordan`.
 - `RiemannStieltjes/` — the library, created in Task 1.
