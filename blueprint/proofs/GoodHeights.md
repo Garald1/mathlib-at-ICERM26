@@ -20,9 +20,9 @@ it could also be proved "by the same method that we used to prove Lemma 6.4".
 * $-1\le\sigma<\frac12$ by the functional equation of $\zeta'/\zeta$ (IEANTN `ZetaLogDeriv.v1`, proved) and a bound
   for the digamma function.
 
-The one input not yet available is a bound for the digamma function, uniform on a vertical strip; it is being added
-to the Riemann–Stieltjes library (see (D) and §5). Appendix A, which proves IEANTN's stronger `GammaAsymptotics.v1`
-instead, is no longer on the critical path.
+The bound for the digamma function uniform on a vertical strip that this needs is in the Riemann–Stieltjes library
+(see (D) and §5). Appendix A, which proves IEANTN's stronger `GammaAsymptotics.v1` instead, is no longer on the
+critical path.
 
 Notation: $s=\sigma+it$; zeros $\rho=\beta+i\gamma$ of $\zeta$ with $0<\beta<1$, counted with multiplicity
 $m_\rho$ (IEANTN's `zetaOrder`); $N[a,b]$ = number of such zeros with $a\le\gamma\le b$.
@@ -109,8 +109,8 @@ $\frac{\zeta'}{\zeta}(s)=-\frac{\zeta'}{\zeta}(1-s)+\log2\pi-\psi(s)+\frac\pi2\t
 * **Source (decided 27 November 2026):** the library's `Complex.exists_norm_digamma_le_log` (blueprint B3, first
   statement, as drafted in `blueprint/drafts/DigammaFourier.lean`:
   `0 < σ₁ → ∃ C, ∀ σ t : ℝ, σ ∈ Set.Icc σ₁ σ₂ → ‖digamma (σ + t * I)‖ ≤ C * Real.log (|t| + 2)`), with
-  $[\sigma_1,\sigma_2]=[1,\frac52]$. The other chat is adding it, from its proved `Complex.norm_digamma_sub_le`
-  (`SpecialFunctions/Gamma/DigammaSeries.lean`, branch `mv-lemma-12-14`):
+  $[\sigma_1,\sigma_2]=[1,\frac52]$. Proved by the other chat (`SpecialFunctions/Gamma/DigammaSeries.lean`, branch
+  `mv-lemma-12-14`, commit `77ccfc1e`, statement as drafted), from its `Complex.norm_digamma_sub_le`:
   $\|\psi(a+it)-\psi(a)\|\le2(\frac1{m^2}+\frac1m)\log(1+|t|)$, $m=\min(a,1)$. For instance, on $1\le a\le\frac52$
   this gives $|\psi(a+it)|\le0.71+4\log(1+|t|)$, since $\psi$ increases on $(0,\infty)$ from $\psi(1)=-\gamma$ to
   $\psi(\frac52)=\frac83-\gamma-2\log2<0.71$.

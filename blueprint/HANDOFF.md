@@ -17,15 +17,19 @@ Read, in this order, before doing anything:
 ## Coordination (updated 27 November 2026)
 
 Another chat works on the same project.
-- **Done there:** Montgomery–Vaughan Theorem C.5 and Lemma 12.14 (both signs), on branch `mv-lemma-12-14` of
-  `Garald1/mathlib-at-ICERM26` (`fb8ae9b1`: three commits on top of `dirichlet-jordan` `90f274f8`, with the same
-  Lean and Mathlib as the library; it merges cleanly into `weil-explicit-formula`). That chat reports no `sorry` and
-  no axioms beyond `propext`, `Classical.choice`, `Quot.sound`.
-- **Next there:** Part A (the Fourier integral theorem), then Theorem 12.13 itself, aiming at the statement drafted in
-  `blueprint/ieantn/WeilExplicitFormula/v1/Conclusions.lean`, or one that implies it immediately.
+- **Done there** (branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26`, head `3992e7d7`: five commits on top of
+  `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges cleanly into
+  `weil-explicit-formula`): Part A (the Fourier integral theorem, with the statements of `drafts/FourierIntegral.lean`
+  unchanged); Part B (Montgomery–Vaughan Theorem C.5 and Lemma 12.14, both signs); and the uniform digamma bound
+  `Complex.exists_norm_digamma_le_log`. That chat reports no `sorry` and no axioms beyond `propext`,
+  `Classical.choice`, `Quot.sound`.
+- **Proposed next there** (Harald to confirm): E, F and G5 of the blueprint, as library lemmas. It proposes to leave
+  C1–C3, D1, G1–G4 and G6 to this laptop (Task 7), since the node's statement uses IEANTN's vocabulary and its sandbox
+  cannot build against IEANTN's pin. Where those parts go will be settled once E, F, G5 are done.
 
-So Tasks 3, 4 and 7, and step 1 of Task 2, are the other chat's: do not start them. Here: Task 1 (which now includes
-the other chat's new files), Task 2 from step 2 on, and Task 6. Ask Harald before starting Task 5.
+So Tasks 3 and 4, and step 1 of Task 2, are done there; do not start Task 7 until Harald says so. Here: Task 1
+(which now includes the other chat's new files), Task 2 from step 2 on, and Task 6. Ask Harald before starting
+Task 5.
 
 **Decided by Harald (27 November):** the digamma bound uniform on vertical strips (blueprint B3, first statement,
 `Complex.exists_norm_digamma_le_log`) is added to the library by the other chat. Neither node draft imports
@@ -85,10 +89,11 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
      `blueprint/port/additions-to-mathlib-files.patch`. The only deleted lines (two) are inside a proof in
      `Partition/Basic.lean` and need not be carried over.
 
-   Then **branch `mv-lemma-12-14`** (the other chat's; `dirichlet-jordan` plus three commits, so port from it)
-   **adds 4 files** (about 2,580 lines): `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean`
-   and `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing}.lean`. Besides Mathlib, they import
-   only each other and the library's `Stieltjes/Fourier.lean`. The same branch qualifies `Set.Ioc` in
+   Then **branch `mv-lemma-12-14`** (the other chat's; `dirichlet-jordan` plus five commits, head `3992e7d7`, so port
+   from it) **adds 5 files** (about 3,350 lines):
+   `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean` and
+   `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing,FourierIntegral}.lean`. Besides Mathlib,
+   they import only each other and the library's own files. The same branch qualifies `Set.Ioc` in
    `Mathlib/Analysis/BoxIntegral/DivergenceTheorem.lean` and `Mathlib/MeasureTheory/Integral/DivergenceTheorem.lean`
    to fix the fork's build: **do not port that.** `Complex.hasSum_digamma` (in `DigammaSeries.lean`) is the Gauss
    series for Re s > 0, proved independently of `GammaSolution.digamma_eq_gaussSum` in IEANTN's
@@ -104,9 +109,9 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
 
 ## Task 2 — compile the draft statements
 
-1. **The other chat's; skip it (see Coordination).** Of `DigammaFourier.lean`, B3 (second statement), B4 and B5
-   are proved there, under the draft's names, in `Stieltjes/DigammaPairing.lean`; `FourierIntegral.lean` is that
-   chat's next job. What this step said: library: add `blueprint/drafts/FourierIntegral.lean` and
+1. **Done in the other chat; skip it (see Coordination).** Every statement of `FourierIntegral.lean` is proved,
+   unchanged, in `Stieltjes/FourierIntegral.lean`; of `DigammaFourier.lean`, B3 (both statements), B4 and B5 are
+   proved under the draft's names. What this step said: library: add `blueprint/drafts/FourierIntegral.lean` and
    `blueprint/drafts/DigammaFourier.lean` as
    `RiemannStieltjes.FourierIntegral` and `RiemannStieltjes.DigammaFourier` (fix imports and module syntax). They are
    statements with `sorry`. **First audit each statement** against the blueprint (§2, parts A and B) and, for B4 and
@@ -124,9 +129,8 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
 
 ## Task 3 — Part A: the Fourier integral theorem
 
-**The other chat's (see Coordination): do not start.**
-
-In the library, prove A1–A6 of the blueprint (`FourierIntegral.lean`) by the route of `DirichletJordan.lean`:
+**Done in the other chat** (`Stieltjes/FourierIntegral.lean`, commit `3992e7d7`). Nothing to do here beyond
+porting (Task 1). What this task said: in the library, prove A1–A6 of the blueprint (`FourierIntegral.lean`) by the route of `DirichletJordan.lean`:
 Fejér's theorem for Fourier integrals, Hardy's Tauberian theorem for integrals reduced to the discrete
 `tendsto_sum_range_of_tendsto_cesaroMean`, and `FourierTransform.fourier_bounded_variation`. No `sorry` left.
 **Stop and report.**
@@ -135,7 +139,8 @@ Fejér's theorem for Fourier integrals, Hardy's Tauberian theorem for integrals 
 
 **Done in the other chat** (branch `mv-lemma-12-14`; blueprint §2, entries marked **L**): B4 is
 `Complex.exists_integral_digamma_mul_exp`, B5 is `Complex.tendsto_integral_digamma_mul_fourier` and
-`Complex.tendsto_integral_digamma_conj_mul_fourier`, the second B3 statement is `Complex.exists_norm_digamma_sub_le`.
+`Complex.tendsto_integral_digamma_conj_mul_fourier`, and the two B3 statements are `Complex.exists_norm_digamma_le_log`
+and `Complex.exists_norm_digamma_sub_le`.
 B4 was proved without residues, so it does not need Task 5. Nothing to do here beyond porting (Task 1).
 
 ## Task 5 — a solution for `ContourIntegration.v1`
@@ -154,16 +159,18 @@ Lemma 6.3 route); a polynomial bound for ζ in σ ≥ 1/8; the pigeonhole choice
 checked at the pin, in `blueprint/proofs/GoodHeights.md`; follow it.** The most delicate part of the project.
 
 For −1 ≤ σ < 1/2, Lemma 12.2 needs the digamma bound (D) of `GoodHeights.md`: the library's
-`Complex.exists_norm_digamma_le_log`, which the other chat is adding (see Coordination). Do that part last; if the
-lemma is not in the library by then, ask Harald rather than proving it here. Do not write a solution for
-`GammaAsymptotics.v1` (Appendix A of `GoodHeights.md` is optional, and not for now).
+`Complex.exists_norm_digamma_le_log` (`Gamma/DigammaSeries.lean`, ported in Task 1), with σ ∈ [1, 5/2]. Do not
+write a solution for `GammaAsymptotics.v1` (Appendix A of `GoodHeights.md` is optional, and not for now).
 
 **Stop and report** at the end, and also whenever an approach is abandoned.
 
 ## Task 7 — a solution for `WeilExplicitFormula.v1`
 
-**The other chat's (see Coordination): do not start.** Its proof of 12.13 should end up as this node's solution
-(proving the node's statement as drafted, or one that implies it immediately).
+**Not before Harald says so (see Coordination).** The other chat proposes that the parts of 12.13 that involve the
+zeros (C1–C3, D1, G1–G4, G6) be done here, from the library's A, B, E, F and G5. If so, note that
+`drafts/WeilExplicitFormula.lean` (and so, probably, the library's E and F) uses a structure `IsTestFunction` and
+writes `rhs` with `(2π)⁻¹ * …` where the node has a conjunction and `… / (2π)`: bridge with a one-line lemma
+each; `Phi` has the same body in both.
 
 Blueprint C1–C3, D1, E, F, G, using the library at a pinned commit and the node's imports as hypotheses. Then run
 Comparator locally (`scripts/verify-comparator.sh`, as `CONTRIBUTING.md` describes). The official verification

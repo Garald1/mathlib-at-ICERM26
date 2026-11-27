@@ -99,6 +99,11 @@ Plan: exactly the route of `DirichletJordan.lean`: Fejér for integrals + Hardy'
   **new** (A1+A3+A4; one-sided limits of BV functions as in `tendsto_rightLim_of_periodic`, **H**).
 - **A6** (by-product, as (12.50)(c)) $\sup_{T,x}|\int_{-T}^T\widehat g(t)e(tx)\,dt|<\infty$. **new**, optional.
 
+*Update, 27 November 2026:* A2–A6 are **L**: `Stieltjes/FourierIntegral.lean` (branch `mv-lemma-12-14`, commit
+`3992e7d7`) proves every statement of `drafts/FourierIntegral.lean` (twelve theorems, three definitions; checked
+here to be textually identical, namespace `FourierIntegral`), e.g. A5 = `tendsto_partialInv` and
+`tendsto_partialInv_of_normalized`, A6 = `exists_norm_partialInv_le`.
+
 ### B. The digamma function $\psi=\Gamma'/\Gamma$ ([MV, Appendix C])
 
 `Complex.digamma = logDeriv Gamma` is **M** (`Gamma/Digamma.lean`, with `digamma_one`, `digamma_one_half`,
@@ -122,7 +127,8 @@ Plan: exactly the route of `DirichletJordan.lean`: Fejér for integrals + Hardy'
   is not proved yet, but is a few lines from **L** `Complex.norm_digamma_sub_le`:
   $\|\psi(a+it)-\psi(a)\|\le2(\frac1{m^2}+\frac1m)\log(1+|t|)$, $m=\min(a,1)$, together with the boundedness of $\psi$
   on $[\sigma_1,\sigma_2]$. Harald's decision (§4, decision 4): the other chat adds it to the library, under the draft's
-  name and statement; nothing here imports `GammaAsymptotics.v1` any more.
+  name and statement; nothing here imports `GammaAsymptotics.v1` any more. Done: **L**,
+  `Complex.exists_norm_digamma_le_log` in `Gamma/DigammaSeries.lean` (commit `77ccfc1e`), the draft's statement.
 - **B4** [MV, Theorem C.5]: for $a,b>0$, $x\ne0$, $T\ge1$,
   $\int_{-T}^T\psi(a+ibt)e(-xt)\,dt=-\psi(a+ibT)\frac{e(-xT)}{2\pi ix}+\psi(a-ibT)\frac{e(xT)}{2\pi ix}
   -\mathbf 1_{x<0}\frac{2\pi}b\frac{e^{2\pi ax/b}}{1-e^{2\pi x/b}}+O\bigl(\frac1{x^2T}\bigr)$.
@@ -236,10 +242,14 @@ See `blueprint/HANDOFF.md`, which turns this into tasks for Claude Code:
 
 Rough size: A 600–900 lines, B 800–1200, C 1000–1500, D 200–400, E 200–300, F 300–500, G 500–800.
 
-**Division of work (27 November 2026).** B is done, in another chat: Theorem C.5 and Lemma 12.14, about 2,580 lines
-in branch `mv-lemma-12-14` (see the **L** entries in §2). That chat does A next, then Theorem 12.13 itself (G),
-aiming at the statement drafted in `ieantn/WeilExplicitFormula/v1/Conclusions.lean`. Theorem 10.13 and Lemma 12.2
-(C4–C7, `ZetaGoodHeights.v1`) are done here, through Claude Code (`HANDOFF.md`, Task 6).
+**Division of work (27 November 2026).** A and B are done, in another chat: about 3,350 lines in branch
+`mv-lemma-12-14` (see the **L** entries in §2). Theorem 10.13 and Lemma 12.2 (C4–C7, `ZetaGoodHeights.v1`) are done
+here, through Claude Code (`HANDOFF.md`, Task 6). The other chat proposes to do E, F and G5 next, as library lemmas,
+and to leave C1–C3, D1, G1–G4 and G6 to the laptop, because the node's statement uses IEANTN's vocabulary
+(`zetaZeroesSum`) and its sandbox cannot build against IEANTN's pin. (Alternative, to be decided once E, F, G5 are
+done: those parts could also go into the library, against the Mathlib-only statements of
+`drafts/WeilExplicitFormula.lean`, taking 10.13, 12.2 and the residue theorem as hypotheses; the laptop would then
+only bridge to `zetaZeroesSum`.)
 
 ## 4. Decisions (26 November 2026)
 
