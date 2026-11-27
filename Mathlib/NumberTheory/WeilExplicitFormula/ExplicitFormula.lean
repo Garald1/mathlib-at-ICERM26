@@ -28,6 +28,10 @@ three IEANTN conclusions, copied verbatim:
   the sum running over the zeros of `ζ` in `0 < Re s < 1` with multiplicity.
 * `theorem_12_13_of`: the conclusion `WeilExplicitFormula.v1.theorem_12_13` of the IEANTN draft
   node, verbatim (`Theorem_12_13`), from the three hypotheses.
+* `IsTestFunction.tendsto_sum_zeros_of`, `IsTestFunction.tendsto_sum_riemannZeta_zeros_of`: the
+  statements `IsTestFunction.tendsto_sum_zeros` and `IsTestFunction.tendsto_sum_riemannZeta_zeros`
+  of the draft `blueprint/drafts/WeilExplicitFormula.lean` (finsums over the zeros), from the three
+  hypotheses.
 
 ## AI usage
 
@@ -631,5 +635,43 @@ theorem theorem_12_13_of (h1013 : Theorem_10_13) (h122 : Lemma_12_2)
   intro F δ₀ hF
   rw [rhsNode_eq]
   exact (isTestFunction_of_node hF).tendsto_zetaZeroesSum h1013 h122 hres
+
+/-! ### The draft's statements, with the hypotheses -/
+
+/-- The draft's `IsTestFunction.tendsto_sum_riemannZeta_zeros` (Weil's explicit formula, summing
+over the non-trivial zeros of `ζ` with multiplicity), from 10.13, 12.2 and the residue theorem. -/
+theorem IsTestFunction.tendsto_sum_riemannZeta_zeros_of (h1013 : Theorem_10_13)
+    (h122 : Lemma_12_2) (hres : ResidueTheoremRectangle) (hF : IsTestFunction F δ₀) :
+    Tendsto (fun T : ℝ ↦ ∑ᶠ ρ ∈ {ρ : ℂ | riemannZeta ρ = 0 ∧ 0 < ρ.re ∧ ρ.re < 1 ∧ |ρ.im| ≤ T},
+        (analyticOrderNatAt riemannZeta ρ : ℂ) * Phi F ρ) atTop (𝓝 (rhs F)) := by
+  refine (hF.tendsto_zetaZeroesSum h1013 h122 hres).congr fun T ↦ ?_
+  have hset : {ρ : ℂ | riemannZeta ρ = 0 ∧ 0 < ρ.re ∧ ρ.re < 1 ∧ |ρ.im| ≤ T} =
+      zetaZeroesIn (Ioo 0 1) (Icc (-T) T) := by
+    ext ρ
+    simp only [zetaZeroesIn, zetaZeroes, mem_setOf_eq, mem_Ioo, mem_Icc, abs_le]
+    tauto
+  rw [hset, finsum_mem_eq_finite_toFinset_sum _ (zetaZeroesIn_strip_finite T),
+    zetaZeroesSum_eq_sum (zetaZeroesIn_strip_finite T)]
+  refine Finset.sum_congr rfl fun ρ hρ ↦ ?_
+  rw [mem_zetaZeroesIn_toFinset] at hρ
+  rw [zetaOrder_eq (ne_one_of_re_lt_one hρ.1.2)]
+  push_cast
+  ring
+
+/-- The draft's `IsTestFunction.tendsto_sum_zeros` (Weil's explicit formula, summing over the
+zeros of `ξ` with multiplicity), from 10.13, 12.2 and the residue theorem. -/
+theorem IsTestFunction.tendsto_sum_zeros_of (h1013 : Theorem_10_13) (h122 : Lemma_12_2)
+    (hres : ResidueTheoremRectangle) (hF : IsTestFunction F δ₀) :
+    Tendsto (fun T : ℝ ↦ ∑ᶠ ρ ∈ {ρ : ℂ | riemannXi ρ = 0 ∧ |ρ.im| ≤ T},
+        (zeroMult ρ : ℂ) * Phi F ρ) atTop (𝓝 (rhs F)) := by
+  refine (hF.tendsto_sum_riemannZeta_zeros_of h1013 h122 hres).congr fun T ↦ ?_
+  have hset : {ρ : ℂ | riemannZeta ρ = 0 ∧ 0 < ρ.re ∧ ρ.re < 1 ∧ |ρ.im| ≤ T} =
+      {ρ : ℂ | riemannXi ρ = 0 ∧ |ρ.im| ≤ T} := by
+    ext ρ
+    simp only [mem_setOf_eq, riemannXi_eq_zero_iff]
+    tauto
+  rw [← hset]
+  refine finsum_mem_congr rfl fun ρ hρ ↦ ?_
+  rw [zeroMult_eq hρ.2.1 hρ.2.2.1]
 
 end WeilExplicitFormula

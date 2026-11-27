@@ -29,8 +29,8 @@ Riemann's `ξ(s) = ½ s(s-1) π^{-s/2} Γ(s/2) ζ(s)` (Montgomery–Vaughan (10.
 
 * `differentiable_riemannXi`, `riemannXi_one_sub` (C1).
 * `riemannXi_eq`: `ξ(s) = ½ s(s-1) Γ_ℝ(s) ζ(s)` for `Re s > 0`, `s ≠ 1` (C1).
-* `riemannXi_eq_zero_iff`, `analyticOrderAt_riemannXi`: the zeros of `ξ` are the zeros of `ζ`
-  in `0 < Re s < 1`, with the same multiplicities (C2).
+* `riemannXi_eq_zero_iff`, `analyticOrderAt_riemannXi`, `zeroMult`: the zeros of `ξ` are the
+  zeros of `ζ` in `0 < Re s < 1`, with the same multiplicities (C2).
 * `logDeriv_riemannXi`: `ξ'/ξ(s) = 1/s + 1/(s-1) + ζ'/ζ(s) + ψ(s/2)/2 - (log π)/2` (C3,
   Montgomery–Vaughan (10.25)); `logDeriv_riemannXi_one_sub`: `ξ'/ξ(1-s) = -ξ'/ξ(s)`.
 * `riemannZeta_conj`, `deriv_riemannZeta_conj`, `analyticOrderAt_riemannZeta_conj`:
@@ -172,6 +172,14 @@ theorem analyticOrderAt_riemannXi {s : ℂ} (hs : 0 < s.re) (hs1 : s.re < 1) :
   rw [analyticOrderAt_congr (riemannXi_eventuallyEq hs hs1')]
   change analyticOrderAt ((fun u ↦ u * (u - 1) / 2 * Gammaℝ u) * riemannZeta) s = _
   rw [analyticOrderAt_mul hA hZ, hA.analyticOrderAt_eq_zero.2 hA0, zero_add]
+
+/-- C2: the multiplicity of `ρ` as a zero of `ξ` (as in the draft). -/
+def zeroMult (ρ : ℂ) : ℕ := analyticOrderNatAt riemannXi ρ
+
+theorem zeroMult_eq {ρ : ℂ} (hρ0 : 0 < ρ.re) (hρ1 : ρ.re < 1) :
+    zeroMult ρ = analyticOrderNatAt riemannZeta ρ := by
+  unfold zeroMult analyticOrderNatAt
+  rw [analyticOrderAt_riemannXi hρ0 hρ1]
 
 theorem logDeriv_Gammaℝ {s : ℂ} (hs : 0 < s.re) :
     logDeriv Gammaℝ s = -(Real.log π / 2) + digamma (s / 2) / 2 := by

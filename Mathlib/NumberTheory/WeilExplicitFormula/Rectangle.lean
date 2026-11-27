@@ -9,6 +9,7 @@ module
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.Analytic.Order
+public import Mathlib.Analysis.Complex.Convex
 
 /-! # The argument principle with a weight, on a rectangle
 
@@ -33,6 +34,9 @@ with `g(ρ) ≠ 0` (Cauchy's integral formula for `m φ(s)/(s - ρ)`, Cauchy's t
 * `circleIntegral_mul_logDeriv`: `∮_{|s-ρ|=r} φ f'/f = 2πi m φ(ρ)` when `f = (s - ρ)^m g` on a
   disc of radius `> r` around `ρ`, with `g` holomorphic and zero-free there.
 * `rectIntegral_mul_logDeriv_eq_sum`: the argument principle with a weight (D1).
+* `finite_zeros_of_analyticOnNhd_rect`, `rectIntegral_mul_logDeriv_of`: the zeros are finitely
+  many, and D1 in the form of the draft (a finsum over the zeros), with the residue theorem as an
+  extra hypothesis.
 
 ## AI usage
 
@@ -221,5 +225,57 @@ theorem rectIntegral_mul_logDeriv_eq_sum (hres : ResidueTheoremRectangle) {f φ 
   refine Finset.sum_congr rfl fun ρ hρ ↦ ?_
   rw [circleIntegral_mul_logDeriv hr0 (hrε ρ hρ) (hgd ρ hρ) (hg0 ρ hρ) (hfg ρ hρ)
     (fun s hs ↦ ((hsub ρ hρ hs).2 : AnalyticAt ℂ φ s).differentiableAt.differentiableWithinAt)]
+
+/-- A function analytic on a closed rectangle and zero-free on its boundary has finitely many
+zeros in the rectangle. -/
+theorem finite_zeros_of_analyticOnNhd_rect {f : ℂ → ℂ} {z w : ℂ} (hre : z.re < w.re)
+    (him : z.im < w.im) (hf : AnalyticOnNhd ℂ f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
+    (hbd : ∀ u ∈ [[z.re, w.re]] ×ℂ [[z.im, w.im]], u ∉ Ioo z.re w.re ×ℂ Ioo z.im w.im →
+      f u ≠ 0) :
+    {u | u ∈ [[z.re, w.re]] ×ℂ [[z.im, w.im]] ∧ f u = 0}.Finite := by
+  have hconv : Convex ℝ ([[z.re, w.re]] ×ℂ [[z.im, w.im]]) := by
+    have := convex_convexHull ℝ ({z, z.re + w.im * I, w.re + z.im * I, w} : Set ℂ)
+    rw [← rectangle_eq_convexHull] at this
+    exact this
+  have hK : IsCompact ([[z.re, w.re]] ×ℂ [[z.im, w.im]]) := by
+    rw [uIcc_of_le hre.le, uIcc_of_le him.le]
+    exact Metric.isCompact_of_isClosed_isBounded (isClosed_Icc.reProdIm isClosed_Icc)
+      ((Metric.isBounded_Icc _ _).reProdIm (Metric.isBounded_Icc _ _))
+  have hzR : z ∈ [[z.re, w.re]] ×ℂ [[z.im, w.im]] :=
+    mem_reProdIm.2 ⟨left_mem_uIcc, left_mem_uIcc⟩
+  have hzb : z ∉ Ioo z.re w.re ×ℂ Ioo z.im w.im := fun h ↦
+    lt_irrefl _ (mem_reProdIm.1 h).1.1
+  by_contra hinf
+  obtain ⟨z₀, hz₀, hacc⟩ := Set.Infinite.exists_accPt_of_subset_isCompact hinf hK
+    (fun u hu ↦ hu.1)
+  have hfreq : ∃ᶠ u in 𝓝[≠] z₀, f u = 0 :=
+    (accPt_iff_frequently_nhdsNE.1 hacc).mono fun u hu ↦ hu.2
+  exact hbd z hzR hzb (hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hconv.isPreconnected
+    hz₀ hfreq hzR)
+
+/-- **The argument principle with a holomorphic weight** (D1), in the form of the draft
+`blueprint/drafts/WeilExplicitFormula.lean` (`rectIntegral_mul_logDeriv`), with the residue theorem
+as an extra hypothesis. -/
+theorem rectIntegral_mul_logDeriv_of (hres : ResidueTheoremRectangle) {f φ : ℂ → ℂ} {z w : ℂ}
+    (hre : z.re < w.re) (him : z.im < w.im)
+    (hf : AnalyticOnNhd ℂ f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
+    (hφ : AnalyticOnNhd ℂ φ ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
+    (hbd : ∀ u ∈ [[z.re, w.re]] ×ℂ [[z.im, w.im]], u ∉ Set.Ioo z.re w.re ×ℂ Set.Ioo z.im w.im →
+      f u ≠ 0) :
+    rectIntegral (fun s ↦ φ s * logDeriv f s) z w =
+      2 * π * I * ∑ᶠ ρ ∈ {ρ : ℂ | ρ ∈ Set.Ioo z.re w.re ×ℂ Set.Ioo z.im w.im ∧ f ρ = 0},
+        (analyticOrderNatAt f ρ : ℂ) * φ ρ := by
+  have hQR : Ioo z.re w.re ×ℂ Ioo z.im w.im ⊆ [[z.re, w.re]] ×ℂ [[z.im, w.im]] := by
+    intro u hu
+    rw [mem_reProdIm] at hu ⊢
+    rw [uIcc_of_le hre.le, uIcc_of_le him.le]
+    exact ⟨Ioo_subset_Icc_self hu.1, Ioo_subset_Icc_self hu.2⟩
+  have hfin : {ρ : ℂ | ρ ∈ Set.Ioo z.re w.re ×ℂ Set.Ioo z.im w.im ∧ f ρ = 0}.Finite :=
+    (finite_zeros_of_analyticOnNhd_rect hre him hf hbd).subset fun ρ hρ ↦ ⟨hQR hρ.1, hρ.2⟩
+  rw [finsum_mem_eq_finite_toFinset_sum _ hfin]
+  refine rectIntegral_mul_logDeriv_eq_sum hres hre him hf hφ
+    (fun ρ hρ ↦ (hfin.mem_toFinset.1 hρ).1) (fun u hu hfu ↦ ?_)
+  rw [hfin.mem_toFinset]
+  exact ⟨by_contra fun h ↦ hbd u hu h hfu, hfu⟩
 
 end WeilExplicitFormula
