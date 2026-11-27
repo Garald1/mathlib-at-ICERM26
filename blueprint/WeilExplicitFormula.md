@@ -75,8 +75,9 @@ subtracting $J(0)e^{-\pi x^2/A}$ and letting $A\to\infty$.
 ## 2. Lemmas
 
 (The labels A1, …, G6 are lemmas of this blueprint, not IEANTN nodes.) Status: **M** = in Mathlib (the
-`dirichlet-jordan` snapshot), **H** = in the `dirichlet-jordan` branch (ICERM files), **I** = in IEANTN,
-**P** = in PNT+ (would have to be ported), **new** = to be written.
+`dirichlet-jordan` snapshot), **H** = in the `dirichlet-jordan` branch (ICERM files), **L** = proved in the
+`mv-lemma-12-14` branch (the other chat's files, on top of `dirichlet-jordan`; added 27 November 2026), **I** = in
+IEANTN, **P** = in PNT+ (would have to be ported), **new** = to be written.
 
 ### A. Fourier integral theorem (integral analogue of Dirichlet–Jordan)
 
@@ -104,21 +105,38 @@ Plan: exactly the route of `DirichletJordan.lean`: Fejér for integrals + Hardy'
 `digamma_apply_add_one`).
 - **B1** (C.10) $\psi(s)=-\frac1s-C_0-\sum_{n\ge1}\bigl(\frac1{s+n}-\frac1n\bigr)$ for $s\ne0,-1,-2,\dots$
   **I**: already proved in IEANTN's `Solutions/GammaAsymptotics.v2/Analytic.lean` as `digamma_eq_gaussSum`
-  (for $\operatorname{Re}s>0$; the general case follows by the recurrence). Reuse it, with credit.
-- **B2** $\psi'(s)=\sum_{n\ge0}(n+s)^{-2}$; hence $\psi'(a+iy)\ll_a1/|y|$ for $|y|\ge1$. **new**
+  (for $\operatorname{Re}s>0$; the general case follows by the recurrence). **L**, proved independently:
+  `Complex.hasSum_digamma` ($\operatorname{Re}s>0$) in `SpecialFunctions/Gamma/DigammaSeries.lean`; use that one.
+  The draft's form (all $s\ne0,-1,\dots$) is not proved, and nothing needs it.
+- **B2** $\psi'(s)=\sum_{n\ge0}(n+s)^{-2}$; hence $\psi'(a+iy)\ll_a1/|y|$ for $|y|\ge1$. **L** for
+  $\operatorname{Re}s>0$: `Complex.hasSum_deriv_digamma`; on vertical lines `Complex.norm_deriv_digamma_le'`,
+  $|\psi'(a+it)|\le2(\frac1{m^2}+\frac1m)/(1+|t|)$ with $m=\min(a,1)$. The draft's statement, uniform in
+  $\sigma\in\mathbb R$, is not proved; only B4 used B2.
 - **B3** For fixed $a,b>0$: $\psi(a+ibt)\ll\log(|t|+2)$ and $\psi(a+ibt)=\psi(a)+O(|t|)$ for $|t|\le1$; also
   $\psi(\sigma+it)\ll\log(|t|+2)$ uniformly for $\frac14\le\sigma\le2$ (needed in C7, G2, G4). Imported from the
   IEANTN node `GammaAsymptotics.v1` ($\psi(w)=\log w+O(1/|w|)$ for $\operatorname{Re}w\ge1$; statement only, awaiting a
-  solution) and the recurrence. **To do: a solution for `GammaAsymptotics.v1`**, from B1.
+  solution) and the recurrence. (Planned on 26 November: a solution for `GammaAsymptotics.v1`, from B1. Superseded;
+  see the update below.)
+  *Update, 27 November 2026.* The second statement is **L**: `Complex.exists_norm_digamma_sub_le`, under the draft's
+  name. The first (draft name `exists_norm_digamma_le_log`, uniform for $\sigma\in[\sigma_1,\sigma_2]\subset(0,\infty)$)
+  is not proved yet, but is a few lines from **L** `Complex.norm_digamma_sub_le`:
+  $\|\psi(a+it)-\psi(a)\|\le2(\frac1{m^2}+\frac1m)\log(1+|t|)$, $m=\min(a,1)$, together with the boundedness of $\psi$
+  on $[\sigma_1,\sigma_2]$. Harald's decision (§4, decision 4): the other chat adds it to the library, under the draft's
+  name and statement; nothing here imports `GammaAsymptotics.v1` any more.
 - **B4** [MV, Theorem C.5]: for $a,b>0$, $x\ne0$, $T\ge1$,
   $\int_{-T}^T\psi(a+ibt)e(-xt)\,dt=-\psi(a+ibT)\frac{e(-xT)}{2\pi ix}+\psi(a-ibT)\frac{e(xT)}{2\pi ix}
   -\mathbf 1_{x<0}\frac{2\pi}b\frac{e^{2\pi ax/b}}{1-e^{2\pi x/b}}+O\bigl(\frac1{x^2T}\bigr)$.
   **new**. Contour shift to $\sigma\to-\infty$ (if $x<0$) or $+\infty$ (if $x>0$) through the simple poles of
   $\psi(a+bs)$ (residue $-1/b$): rectangles $[-R_k,0]\times[-T,T]$ with $R_k\to\infty$ between poles, the
   far side tends to $0$. Needs a residue theorem for finitely many simple poles in a rectangle (D2).
+  *Update:* **L**, `Complex.exists_integral_digamma_mul_exp` (`Stieltjes/DigammaPairing.lean`, restating
+  `Complex.norm_integral_digamma_line_mul_cexp_sub_le` of `Gamma/DigammaFourier.lean`). It was proved by integrating by
+  parts twice and Fourier inversion, without residues, so B4 does not need D2.
 - **B5** [MV, Lemma 12.14], (12.27). **new**. MV's proof uses B3, B4, Fubini, and Gaussian subtraction
   (the Gaussian's Fourier transform is **M**: `fourier_gaussian_pi`, `fourierIntegral_gaussian` in
-  `Analysis/SpecialFunctions/Gaussian/FourierTransform.lean`).
+  `Analysis/SpecialFunctions/Gaussian/FourierTransform.lean`). *Update:* **L**, both signs:
+  `Complex.tendsto_integral_digamma_mul_fourier` and `Complex.tendsto_integral_digamma_conj_mul_fourier`, under the
+  draft's names.
 
 ### C. $\xi$ and the zeros of $\zeta$
 
@@ -169,7 +187,8 @@ Rectangle integrals: `Complex.integral_boundary_rect_eq_zero_of_differentiableOn
 - **D2** Residue theorem on rectangles, residues written as circle integrals: the IEANTN node
   `ContourIntegration.v1` (`residue_theorem_rectangle`; statement only, currently inactive, the first thing IEANTN
   says to reactivate when a node needs contour integration). **To do: reactivate it and give it a solution**
-  (PNT+'s rectangle lemmas, ported with credit, and Mathlib's annulus invariance).
+  (PNT+'s rectangle lemmas, ported with credit, and Mathlib's annulus invariance). Needed for D1 and G4; B4 turned
+  out not to need it.
 
 ### E. The test function and $\Phi$
 
@@ -208,13 +227,19 @@ See `blueprint/HANDOFF.md`, which turns this into tasks for Claude Code:
 1. the Riemann–Stieltjes library as a standalone Lake package on IEANTN's Lean/Mathlib pin;
 2. the draft statements compiled (library: A, B; IEANTN: the two node drafts);
 3. **A** (Fourier integral theorem), then **B** (digamma, Theorem C.5, Lemma 12.14) in the library;
-4. solutions for `GammaAsymptotics.v1` and `ContourIntegration.v1`;
+4. a solution for `ContourIntegration.v1` (and, as planned on 26 November, for `GammaAsymptotics.v1`: no longer
+   needed, see §4, decision 4);
 5. `ZetaGoodHeights.v1` (C4–C7: Jensen, Borel–Carathéodory, a polynomial bound for $\zeta$ in $\sigma\ge\frac18$,
    the choice of $T_1$) — the most delicate part;
 6. `WeilExplicitFormula.v1` (C1–C3, D1, E, F, G);
 7. Comparator, receipts, and the Palomar spin-off.
 
 Rough size: A 600–900 lines, B 800–1200, C 1000–1500, D 200–400, E 200–300, F 300–500, G 500–800.
+
+**Division of work (27 November 2026).** B is done, in another chat: Theorem C.5 and Lemma 12.14, about 2,580 lines
+in branch `mv-lemma-12-14` (see the **L** entries in §2). That chat does A next, then Theorem 12.13 itself (G),
+aiming at the statement drafted in `ieantn/WeilExplicitFormula/v1/Conclusions.lean`. Theorem 10.13 and Lemma 12.2
+(C4–C7, `ZetaGoodHeights.v1`) are done here, through Claude Code (`HANDOFF.md`, Task 6).
 
 ## 4. Decisions (26 November 2026)
 
@@ -226,6 +251,9 @@ Rough size: A 600–900 lines, B 800–1200, C 1000–1500, D 200–400, E 200�
    import nothing else; that is why (12.21) appears as "$e^{a|x|}F$ is integrable and of bounded variation".
 3. **The result goes into IEANTN**, importing the nodes already there rather than copying them, and the Palomar
    version is generated from IEANTN (`ieantn.py spinoff`).
+4. (27 November 2026) **The digamma bound uniform on vertical strips** (B3, first statement, `exists_norm_digamma_le_log`)
+   **is added to the library by the other chat**, from its `Complex.norm_digamma_sub_le`. So neither
+   `ZetaGoodHeights.v1` nor `WeilExplicitFormula.v1` imports `GammaAsymptotics.v1`.
 
 ## 5. IEANTN integration
 
@@ -245,16 +273,16 @@ our path — which is also what an unconditional result means.
 | imported conclusion | used for | status in IEANTN (23 Nov 2026) | to do |
 |---|---|---|---|
 | `ZetaZeroes.v1`: `finite_zeroes_on_compact`, `no_nontrivial_zeroes_left`, `zeroes_off_axis_in_strip` | C2, G1, G6 | proved (lean-comparator) | — |
-| `ContourIntegration.v1.residue_theorem_rectangle` | D1, B4, G4 | inactive, none-yet | reactivate; prove |
-| `GammaAsymptotics.v1.digamma_sub_log_isBigO` | B3 | awaiting-solution | prove (Gauss series already proved for v2) |
+| `ContourIntegration.v1.residue_theorem_rectangle` | D1, G4 | inactive, none-yet | reactivate; prove |
 | `ZetaGoodHeights.v1.theorem_10_13`, `.lemma_12_2` | C4, C7, G2, G6 | new node (draft) | state; prove |
 
-`ZetaGoodHeights.v1` in turn imports `ZetaZeroes.v1.finite_zeroes_on_compact` (both conclusions),
-`ZetaLogDeriv.v1.logDeriv_functional_equation` (proved, lean-comparator) and
-`GammaAsymptotics.v1.digamma_sub_log_isBigO` (awaiting-solution) — the last two for `lemma_12_2` only, on
-$-1\le\sigma<\frac12$. So until `GammaAsymptotics.v1` has a solution, `lemma_12_2` and everything after it are
-conditional on it. Its proofs are written out in `blueprint/proofs/GoodHeights.md`, whose Appendix A derives
-`GammaAsymptotics.v1` from the Gauss series of the v2 solution.
+`ZetaGoodHeights.v1` in turn imports `ZetaZeroes.v1.finite_zeroes_on_compact` (both conclusions) and, for
+`lemma_12_2` only, `ZetaLogDeriv.v1.logDeriv_functional_equation` (proved, lean-comparator). Its proofs are written out
+in `blueprint/proofs/GoodHeights.md`.
+
+`GammaAsymptotics.v1` (awaiting-solution) is no longer imported (decision 4, §4): the digamma bounds, B3 included,
+come from the library. Appendix A of `GoodHeights.md` derives `GammaAsymptotics.v1` from the Gauss series; a solution
+for it would be an optional contribution to IEANTN, off our path.
 
 Not imported: `ZeroCount.v1` (Rosser's explicit count) and `ZetaHadamard.v1` (MV Corollary 10.14), both resting on the
 literature: the route here does not need the Hadamard product.

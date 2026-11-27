@@ -46,8 +46,6 @@ conclusions:
     conclusion: zeroes_off_axis_in_strip
   - node: ContourIntegration.v1
     conclusion: residue_theorem_rectangle
-  - node: GammaAsymptotics.v1
-    conclusion: digamma_sub_log_isBigO
   - node: ZetaGoodHeights.v1
     conclusion: theorem_10_13
   - node: ZetaGoodHeights.v1
@@ -69,7 +67,9 @@ conclusions:
       THE IMPORTS ARE THE PROOF'S INPUTS, NOT MONTGOMERY AND VAUGHAN'S: their proof goes through the
       Hadamard product (Theorem 10.12, Corollary 10.14) for Lemma 12.1; the route planned here obtains
       Theorem 10.13 and Lemma 12.2 from Jensen's inequality and the Borel-Caratheodory lemma instead,
-      and so does not import ZetaHadamard.v1.
+      and so does not import ZetaHadamard.v1. The digamma estimates (Theorem C.5, Lemma 12.14, and a
+      bound for psi uniform on vertical strips) are proved in the pinned Riemann-Stieltjes library,
+      so GammaAsymptotics.v1 is not imported either.
   designated: montgomery-vaughan
 
 sources:

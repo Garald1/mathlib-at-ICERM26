@@ -20,9 +20,9 @@ it could also be proved "by the same method that we used to prove Lemma 6.4".
 * $-1\le\sigma<\frac12$ by the functional equation of $\zeta'/\zeta$ (IEANTN `ZetaLogDeriv.v1`, proved) and a bound
   for the digamma function.
 
-The one input not yet available is the digamma bound: IEANTN's `GammaAsymptotics.v1` states it but is unproved. See
-(D) and §5; Appendix A shows how to prove it from the Gauss representation that IEANTN's `GammaAsymptotics.v2`
-solution already contains.
+The one input not yet available is a bound for the digamma function, uniform on a vertical strip; it is being added
+to the Riemann–Stieltjes library (see (D) and §5). Appendix A, which proves IEANTN's stronger `GammaAsymptotics.v1`
+instead, is no longer on the critical path.
 
 Notation: $s=\sigma+it$; zeros $\rho=\beta+i\gamma$ of $\zeta$ with $0<\beta<1$, counted with multiplicity
 $m_\rho$ (IEANTN's `zetaOrder`); $N[a,b]$ = number of such zeros with $a\le\gamma\le b$.
@@ -105,13 +105,18 @@ So the error is at most $\frac{2K}{R-r}+\frac{8(1+L)}{(R-r)^2}\ll_{r,R}1+L$. $\s
 through Comparator): if $s\notin\{0,-1,-2,\dots\}$, $s\ne1$, $\zeta(s)\ne0$ and $\cos(\pi s/2)\ne0$, then
 $\frac{\zeta'}{\zeta}(s)=-\frac{\zeta'}{\zeta}(1-s)+\log2\pi-\psi(s)+\frac\pi2\tan\frac{\pi s}2$.
 
-**(D) Digamma.** Needed: $|\psi(w)|\ll\log(|w|+2)$ for $1\le\Re w\le\frac52$, *uniformly in* $\Im w$.
-* IEANTN `GammaAsymptotics.v1.digamma_sub_log_isBigO`, $\exists C\ \forall w,\ 1\le\Re w\Rightarrow
-  \|\psi(w)-\log w\|\le C/\|w\|$, gives it, since $|\log w|\le\log|w|+\frac\pi2$ for $|w|\ge1$. But it is
-  **unproved** (status `awaiting-solution`); its metadata says it is no longer on any consumer's path.
-* `GammaAsymptotics.v2` (proved) is the strip version, $|\Im w|\le H$ with $C$ depending on $H$. It does not
-  suffice here: $T_1\to\infty$.
-* Appendix A derives `GammaAsymptotics.v1` from the Gauss representation proved in the v2 solution.
+**(D) Digamma.** Needed: $|\psi(\sigma+it)|\le C_D\log(|t|+2)$ for $1\le\sigma\le\frac52$ and all real $t$.
+* **Source (decided 27 November 2026):** the library's `Complex.exists_norm_digamma_le_log` (blueprint B3, first
+  statement, as drafted in `blueprint/drafts/DigammaFourier.lean`:
+  `0 < σ₁ → ∃ C, ∀ σ t : ℝ, σ ∈ Set.Icc σ₁ σ₂ → ‖digamma (σ + t * I)‖ ≤ C * Real.log (|t| + 2)`), with
+  $[\sigma_1,\sigma_2]=[1,\frac52]$. The other chat is adding it, from its proved `Complex.norm_digamma_sub_le`
+  (`SpecialFunctions/Gamma/DigammaSeries.lean`, branch `mv-lemma-12-14`):
+  $\|\psi(a+it)-\psi(a)\|\le2(\frac1{m^2}+\frac1m)\log(1+|t|)$, $m=\min(a,1)$. For instance, on $1\le a\le\frac52$
+  this gives $|\psi(a+it)|\le0.71+4\log(1+|t|)$, since $\psi$ increases on $(0,\infty)$ from $\psi(1)=-\gamma$ to
+  $\psi(\frac52)=\frac83-\gamma-2\log2<0.71$.
+* Not used any more: IEANTN `GammaAsymptotics.v1.digamma_sub_log_isBigO` ($\|\psi(w)-\log w\|\le C/\|w\|$ for
+  $\Re w\ge1$), which also gives (D) but is unproved (status `awaiting-solution`). Appendix A proves it.
+  `GammaAsymptotics.v2` (proved) is the version for bounded $|\Im w|$, which would not do: $T_1\to\infty$.
 
 The recurrence $\psi(w+1)=\psi(w)+1/w$ is Mathlib's `Complex.digamma_apply_add_one`.
 
@@ -182,27 +187,27 @@ $\cos(\pi s/2)\ne0$; and $\zeta(s)\ne0$ was shown. Then:
 * $1-s=(1-\sigma)-iT_1$, $\frac12<1-\sigma\le2$. By `riemannZeta_conj` (and hence $\zeta'(\bar w)=\overline{\zeta'(w)}$),
   $|\frac{\zeta'}\zeta(1-s)|=|\frac{\zeta'}\zeta((1-\sigma)+iT_1)|\le C_3\log^2T$.
 * $\psi(s)=\psi(s+2)-\frac1s-\frac1{s+1}$ (`Complex.digamma_apply_add_one` twice), with $1\le\Re(s+2)<\frac52$ and
-  $|s+2|\le T+4$; by (D), $|\psi(s)|\le\log(T+4)+O(1)\ll\log T$.
+  $\Im(s+2)=T_1\le T+1$; by (D), $|\psi(s)|\le C_D\log(T+3)+1\ll\log T$.
 * $|\tan(\pi s/2)|\le\coth(\pi T_1/2)\le\coth\pi<1.01$, from
   $|\tan(x+iy)|^2=\frac{\sin^2x+\sinh^2y}{\cos^2x+\sinh^2y}\le\coth^2y$ (and $\pi T_1/2\ge\pi$).
 
 So $|\frac{\zeta'}\zeta(\sigma+iT_1)|\le C_3\log^2T+\log2\pi+O(\log T)+\frac\pi2\cdot1.01\le C\log^2T$. $\square$
 
-## 5. Imports of `ZetaGoodHeights.v1`, and the one decision
+## 5. Imports of `ZetaGoodHeights.v1`
 
 * `theorem_10_13`: `ZetaZeroes.v1.finite_zeroes_on_compact`. (Everything else is Mathlib.)
-* `lemma_12_2`: `ZetaZeroes.v1.finite_zeroes_on_compact` (its proof goes through §2),
-  `ZetaLogDeriv.v1.logDeriv_functional_equation`, `GammaAsymptotics.v1.digamma_sub_log_isBigO`.
+* `lemma_12_2`: `ZetaZeroes.v1.finite_zeroes_on_compact` (its proof goes through §2) and
+  `ZetaLogDeriv.v1.logDeriv_functional_equation`. Everything else is Mathlib or the pinned library, (D) included.
 
-`GammaAsymptotics.v1` is unproved, so with this import `lemma_12_2` is proved *conditionally* on it, and so is
-anything downstream (Theorem 12.13). The alternatives:
-1. keep the import and solve `GammaAsymptotics.v1` (Appendix A) — a separate contribution to IEANTN, which needs
-   Harald's go-ahead before anything is submitted. **This is the plan** (`HANDOFF.md`, Task 6);
-2. keep the import and leave `GammaAsymptotics.v1` to its maintainers;
-3. drop the import and prove the weaker bound of (D) inside the solution, from the Gauss representation (copied with
-   credit). This avoids the dependency but duplicates work IEANTN would rather see done once.
+On 26 November `lemma_12_2` also imported `GammaAsymptotics.v1`, which is unproved, so `lemma_12_2` and Theorem 12.13
+would have been conditional on it. On 27 November Harald decided that the other chat adds (D) to the library instead
+(blueprint §4, decision 4), so that import is gone.
 
 ## Appendix A. `GammaAsymptotics.v1` from the Gauss representation
+
+*Optional since 27 November 2026: nothing on our path uses it. Kept as a possible contribution to IEANTN (which
+would need Harald's go-ahead). The library's `Complex.hasSum_digamma` (other chat) is the same Gauss series and can
+replace Tao's lemma below.*
 
 The `GammaAsymptotics.v2` solution (T. Tao) proves, in `Solutions/GammaAsymptotics.v2/Analytic.lean`,
 `GammaSolution.digamma_eq_gaussSum : 0 < s.re → Complex.digamma s = gaussSum s`, where

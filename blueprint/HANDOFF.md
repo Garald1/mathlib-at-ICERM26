@@ -8,19 +8,28 @@ Claude Code on his laptop. Nothing under `blueprint/` has been compiled.
 The goal is a Lean proof of Theorem 12.13 of Montgomery–Vaughan (MV), *Multiplicative Number Theory I*, in the case
 q = 1, integrated into IEANTN (`teorth/IEANTN`) as a node whose imports are other IEANTN nodes, and from there
 registered on Palomar through IEANTN's spin-off tool. The proofs use Harald's Riemann–Stieltjes library (branch
-`dirichlet-jordan` of `Garald1/mathlib-at-icerm26`).
+`dirichlet-jordan` of `Garald1/mathlib-at-icerm26`, and the other chat's branch `mv-lemma-12-14` on top of it).
 
 Read, in this order, before doing anything:
 1. `blueprint/WeilExplicitFormula.md`, all of it. §4 records Harald's decisions; §5 the IEANTN plan.
 2. In the IEANTN clone: `CLAUDE.md`, `CONTRIBUTING.md`, `docs/ARCHITECTURE.md`, `docs/NODES.md`, `docs/SOLUTIONS.md`.
 
-## Coordination (added 26 November 2026)
+## Coordination (updated 27 November 2026)
 
-**Another chat is formalizing Montgomery–Vaughan Lemma 12.14 (with Theorem C.5) and Theorem 12.13 itself.** So, until
-Harald says otherwise: in Task 2, compile only the IEANTN node drafts, not `FourierIntegral.lean` or
-`DigammaFourier.lean`; and do not start Tasks 3, 4 or 7. Tasks 1, 5 and 6 are inputs that the other chat's proof of
-12.13 needs, but are not 12.13 or 12.14 themselves; check with Harald before starting 5 or 6 that the other chat is
-not doing them too.
+Another chat works on the same project.
+- **Done there:** Montgomery–Vaughan Theorem C.5 and Lemma 12.14 (both signs), on branch `mv-lemma-12-14` of
+  `Garald1/mathlib-at-ICERM26` (`fb8ae9b1`: three commits on top of `dirichlet-jordan` `90f274f8`, with the same
+  Lean and Mathlib as the library; it merges cleanly into `weil-explicit-formula`). That chat reports no `sorry` and
+  no axioms beyond `propext`, `Classical.choice`, `Quot.sound`.
+- **Next there:** Part A (the Fourier integral theorem), then Theorem 12.13 itself, aiming at the statement drafted in
+  `blueprint/ieantn/WeilExplicitFormula/v1/Conclusions.lean`, or one that implies it immediately.
+
+So Tasks 3, 4 and 7, and step 1 of Task 2, are the other chat's: do not start them. Here: Task 1 (which now includes
+the other chat's new files), Task 2 from step 2 on, and Task 6. Ask Harald before starting Task 5.
+
+**Decided by Harald (27 November):** the digamma bound uniform on vertical strips (blueprint B3, first statement,
+`Complex.exists_norm_digamma_le_log`) is added to the library by the other chat. Neither node draft imports
+`GammaAsymptotics.v1` any more, and nobody here writes a solution for it.
 
 ## Ground rules
 
@@ -76,6 +85,16 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
      `blueprint/port/additions-to-mathlib-files.patch`. The only deleted lines (two) are inside a proof in
      `Partition/Basic.lean` and need not be carried over.
 
+   Then **branch `mv-lemma-12-14`** (the other chat's; `dirichlet-jordan` plus three commits, so port from it)
+   **adds 4 files** (about 2,580 lines): `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean`
+   and `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing}.lean`. Besides Mathlib, they import
+   only each other and the library's `Stieltjes/Fourier.lean`. The same branch qualifies `Set.Ioc` in
+   `Mathlib/Analysis/BoxIntegral/DivergenceTheorem.lean` and `Mathlib/MeasureTheory/Integral/DivergenceTheorem.lean`
+   to fix the fork's build: **do not port that.** `Complex.hasSum_digamma` (in `DigammaSeries.lean`) is the Gauss
+   series for Re s > 0, proved independently of `GammaSolution.digamma_eq_gaussSum` in IEANTN's
+   `Solutions/GammaAsymptotics.v2`: use the library's, and do not copy the IEANTN one into the library. Whatever the
+   other chat adds later is ported the same way.
+
    `Stieltjes/Unused.lean` says of itself that it is not in use: ask Harald before dropping it. Keep every file's
    copyright header and author list as it is.
 4. Module names `RiemannStieltjes.<path as in Mathlib>`; keep namespaces and declaration names unchanged, so that the
@@ -85,7 +104,9 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
 
 ## Task 2 — compile the draft statements
 
-1. **On hold (see Coordination).** Library: add `blueprint/drafts/FourierIntegral.lean` and
+1. **The other chat's; skip it (see Coordination).** Of `DigammaFourier.lean`, B3 (second statement), B4 and B5
+   are proved there, under the draft's names, in `Stieltjes/DigammaPairing.lean`; `FourierIntegral.lean` is that
+   chat's next job. What this step said: library: add `blueprint/drafts/FourierIntegral.lean` and
    `blueprint/drafts/DigammaFourier.lean` as
    `RiemannStieltjes.FourierIntegral` and `RiemannStieltjes.DigammaFourier` (fix imports and module syntax). They are
    statements with `sorry`. **First audit each statement** against the blueprint (§2, parts A and B) and, for B4 and
@@ -103,7 +124,7 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
 
 ## Task 3 — Part A: the Fourier integral theorem
 
-**On hold (see Coordination): possibly done in the other chat.**
+**The other chat's (see Coordination): do not start.**
 
 In the library, prove A1–A6 of the blueprint (`FourierIntegral.lean`) by the route of `DirichletJordan.lean`:
 Fejér's theorem for Fourier integrals, Hardy's Tauberian theorem for integrals reduced to the discrete
@@ -112,16 +133,15 @@ Fejér's theorem for Fourier integrals, Hardy's Tauberian theorem for integrals 
 
 ## Task 4 — Part B: the digamma function, Theorem C.5, Lemma 12.14
 
-**On hold (see Coordination): Lemma 12.14 and Theorem C.5 are being done in the other chat.**
-
-In the library. B1 is already proved in IEANTN's `Solutions/GammaAsymptotics.v2/` (`digamma_eq_gaussSum`, for
-Re s > 0): reuse it, crediting its authors in the file header. B4 needs a residue theorem on rectangles (Task 5); do
-that first, or prove what B4 needs for its specific function. (The solution for the IEANTN node
-`GammaAsymptotics.v1` has moved to Task 6, which needs it.) **Stop and report.**
+**Done in the other chat** (branch `mv-lemma-12-14`; blueprint §2, entries marked **L**): B4 is
+`Complex.exists_integral_digamma_mul_exp`, B5 is `Complex.tendsto_integral_digamma_mul_fourier` and
+`Complex.tendsto_integral_digamma_conj_mul_fourier`, the second B3 statement is `Complex.exists_norm_digamma_sub_le`.
+B4 was proved without residues, so it does not need Task 5. Nothing to do here beyond porting (Task 1).
 
 ## Task 5 — a solution for `ContourIntegration.v1`
 
-Only after Harald has agreed its reactivation with the maintainers. Port PNT+'s rectangle and residue lemmas
+Needed for D1 and G4 of the proof of 12.13 (not for B4). Only after Harald has agreed its reactivation with the
+maintainers, and has said whether the other chat, which does 12.13, will do this too. Port PNT+'s rectangle and residue lemmas
 (`ResidueCalcOnRectangles.lean` in `AlexKontorovich/PrimeNumberTheoremAnd`) with credit, or prove directly from
 Mathlib's Cauchy theorem on rectangles and its annulus invariance of circle integrals.
 
@@ -133,18 +153,17 @@ Lemma 6.3 route); a polynomial bound for ζ in σ ≥ 1/8; the pigeonhole choice
 (IEANTN `ZetaLogDeriv.v1`) for −1 ≤ σ < 1/2. **The proofs are written out step by step, with the Mathlib names
 checked at the pin, in `blueprint/proofs/GoodHeights.md`; follow it.** The most delicate part of the project.
 
-`lemma_12_2` imports `GammaAsymptotics.v1.digamma_sub_log_isBigO`, which has no solution yet. Appendix A of
-`GoodHeights.md` derives it from `digamma_eq_gaussSum` (IEANTN `Solutions/GammaAsymptotics.v2/Analytic.lean`, by
-T. Tao; reuse it with credit). Write that as a solution for `GammaAsymptotics.v1` (in
-`ieantn/Solutions/GammaAsymptotics.v1/`, following `docs/SOLUTIONS.md` and `CONTRIBUTING.md`), first, unless Harald
-says the other chat is doing it.
+For −1 ≤ σ < 1/2, Lemma 12.2 needs the digamma bound (D) of `GoodHeights.md`: the library's
+`Complex.exists_norm_digamma_le_log`, which the other chat is adding (see Coordination). Do that part last; if the
+lemma is not in the library by then, ask Harald rather than proving it here. Do not write a solution for
+`GammaAsymptotics.v1` (Appendix A of `GoodHeights.md` is optional, and not for now).
 
 **Stop and report** at the end, and also whenever an approach is abandoned.
 
 ## Task 7 — a solution for `WeilExplicitFormula.v1`
 
-**On hold (see Coordination): Theorem 12.13 is being done in the other chat**, whose proof should end up as this
-node's solution (ideally proving the node's statement as drafted, or one that implies it immediately).
+**The other chat's (see Coordination): do not start.** Its proof of 12.13 should end up as this node's solution
+(proving the node's statement as drafted, or one that implies it immediately).
 
 Blueprint C1–C3, D1, E, F, G, using the library at a pinned commit and the node's imports as hypotheses. Then run
 Comparator locally (`scripts/verify-comparator.sh`, as `CONTRIBUTING.md` describes). The official verification
@@ -163,14 +182,15 @@ go in `STATUS.md` and the commit messages.
 > I would like to add `WeilExplicitFormula.v1` (kind `standard`; MV Theorem 12.13 for q = 1) and
 > `ZetaGoodHeights.v1` (kind `standard`; MV Theorem 10.13 and Lemma 12.2, which a contour argument needs to place its
 > horizontal sides). The first imports `ZetaZeroes.v1` (`finite_zeroes_on_compact`, `no_nontrivial_zeroes_left`,
-> `zeroes_off_axis_in_strip`), `ContourIntegration.v1`, `GammaAsymptotics.v1` and `ZetaGoodHeights.v1`; it does not
+> `zeroes_off_axis_in_strip`), `ContourIntegration.v1` and `ZetaGoodHeights.v1`; it does not
 > use `ZetaHadamard.v1`, since the planned proofs go through Jensen's inequality and the Borel–Carathéodory lemma
-> rather than the Hadamard product. The second imports `ZetaZeroes.v1` (`finite_zeroes_on_compact`),
-> `ZetaLogDeriv.v1` and `GammaAsymptotics.v1`.
+> rather than the Hadamard product. The second imports `ZetaZeroes.v1` (`finite_zeroes_on_compact`) and
+> `ZetaLogDeriv.v1`.
 >
-> This needs `ContourIntegration.v1` reactivated; I plan to supply solutions for it and for `GammaAsymptotics.v1` (the
-> latter from the Gauss series already proved in `Solutions/GammaAsymptotics.v2`). The solutions would rest on a
-> pinned Riemann–Stieltjes library (a standalone package on the core's Mathlib pin), as `docs/ARCHITECTURE.md` allows.
+> This needs `ContourIntegration.v1` reactivated; I plan to supply a solution for it. The solutions would rest on a
+> pinned Riemann–Stieltjes library (a standalone package on the core's Mathlib pin), as `docs/ARCHITECTURE.md` allows;
+> the estimates for the digamma function that the proofs need (Montgomery–Vaughan Theorem C.5, Lemma 12.14, and a
+> bound uniform on vertical strips) are proved there, so neither node imports `GammaAsymptotics.v1`.
 >
 > One statement deviates in form from the book: MV's hypothesis (12.21), ∫ e^{(1/2+δ₀)2π|x|} |dF(x)| < ∞, cannot be
 > written in Mathlib, so (12.20) and (12.21) are stated together as "x ↦ e^{(1/2+δ₀)2π|x|} F(x) is integrable and of

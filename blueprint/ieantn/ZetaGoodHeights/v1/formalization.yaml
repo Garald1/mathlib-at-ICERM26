@@ -55,8 +55,6 @@ conclusions:
     conclusion: finite_zeroes_on_compact
   - node: ZetaLogDeriv.v1
     conclusion: logDeriv_functional_equation
-  - node: GammaAsymptotics.v1
-    conclusion: digamma_sub_log_isBigO
   imports_status: identified
   justifications:
   - id: montgomery-vaughan
@@ -71,8 +69,10 @@ conclusions:
       10.14), remarking that the method of their Lemma 6.4 would also do. The planned Lean proof takes
       that other route: theorem_10_13 and a pigeonhole choice of T_1; Landau's lemma (their Lemma 6.3)
       for 1/2 <= sigma <= 2; and for -1 <= sigma < 1/2 the functional equation of zeta'/zeta
-      (ZetaLogDeriv.v1) with the digamma bound (GammaAsymptotics.v1), which is why those are imported.
-      finite_zeroes_on_compact is imported because the proof goes through theorem_10_13.
+      (ZetaLogDeriv.v1, hence the import) with a bound psi(sigma + it) << log(|t| + 2), uniform for
+      1 <= sigma <= 5/2, proved in the pinned Riemann-Stieltjes library (so GammaAsymptotics.v1 is
+      not imported). finite_zeroes_on_compact is imported because the proof goes through
+      theorem_10_13.
   designated: montgomery-vaughan
 
 sources:
@@ -102,7 +102,3 @@ limitations:
 - >-
   Non-explicit (the constants are not given). An explicit zero count is ZeroCount.v1 (Rosser,
   as restated by Chirre-Helfgott), which rests on the literature.
-- >-
-  lemma_12_2 imports GammaAsymptotics.v1, which has no solution yet (GammaAsymptotics.v2, the strip
-  version, does not suffice, since T_1 is unbounded). A solution for it from the Gauss series of the
-  GammaAsymptotics.v2 solution is planned.

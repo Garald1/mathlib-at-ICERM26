@@ -46,7 +46,7 @@ Theorem 10.13 from Jensen's inequality (Mathlib's `AnalyticOnNhd.sum_divisor_le`
 local expansion of `ζ'/ζ` over nearby zeroes from the Borel–Carathéodory lemma
 (`Complex.borelCaratheodory`) and `MeromorphicOn.extract_zeros_poles`, as in their Lemma 6.3, with a
 pigeonhole choice of `T₁`; for `-1 ≤ σ < 1/2`, the functional equation of `ζ'/ζ`
-(`ZetaLogDeriv.v1`) and the digamma bound (`GammaAsymptotics.v1`).
+(`ZetaLogDeriv.v1`) and a bound for the digamma function on a vertical strip.
 -/
 
 namespace ZetaGoodHeights.v1
