@@ -6,7 +6,7 @@ Authors: Harald Helfgott
 -/
 module
 
-public import Mathlib.Analysis.Complex.JensenFormula
+public import Mathlib.NumberTheory.WeilExplicitFormula.Landau
 public import Mathlib.NumberTheory.WeilExplicitFormula.ZetaBounds
 
 /-! # Zeros of `ζ` in a box of height one (Montgomery–Vaughan, Theorem 10.13)
@@ -36,12 +36,6 @@ open scoped ComplexConjugate
 noncomputable section
 
 namespace WeilExplicitFormula
-
-theorem sum_le_finsum_of_nonneg {α : Type*} {f : α → ℤ} (hf : ∀ a, 0 ≤ f a)
-    (hs : (Function.support f).Finite) (s : Finset α) : ∑ a ∈ s, f a ≤ ∑ᶠ a, f a := by
-  classical
-  rw [finsum_eq_sum_of_support_subset f (s := s ∪ hs.toFinset) (fun a ha ↦ by simp [ha])]
-  exact Finset.sum_le_sum_of_subset_of_nonneg Finset.subset_union_left fun a _ _ ↦ hf a
 
 theorem divisor_zetaOne_eq {U : Set ℂ} {ρ : ℂ} (hρ : ρ ∈ U) (hρ1 : ρ ≠ 1) :
     divisor zetaOne U ρ = zetaOrder ρ := by
@@ -172,13 +166,12 @@ theorem sum_zetaOrder_le_of_jensen {T : ℝ} (hT : 0 ≤ T) (S : Finset ℂ)
         rw [hlogR]
         gcongr
 
-/-- **Montgomery–Vaughan, Theorem 10.13**: there are `O(log (T + 2))` zeros `ρ = β + iγ` of `ζ`
-with `0 < β < 1` and `T ≤ γ ≤ T + 1`, counted with multiplicity. This is the proposition
-`Theorem_10_13` of `ExplicitFormula.lean`. -/
-theorem exists_zetaZeroesSum_le : ∃ C : ℝ, ∀ T : ℝ, 0 ≤ T →
+/-- **Montgomery–Vaughan, Theorem 10.13**, with an explicit constant: for `T ≥ 0` there are at
+most `(20 / log (22/21)) log (T + 2)` zeros `ρ = β + iγ` of `ζ` with `0 < β < 1` and
+`T ≤ γ ≤ T + 1`, counted with multiplicity. -/
+theorem zetaZeroesSum_le_log {T : ℝ} (hT : 0 ≤ T) :
     zetaZeroesSum (Set.Ioo 0 1) (Set.Icc T (T + 1)) (fun _ ↦ (1 : ℝ)) ≤
-      C * Real.log (T + 2) := by
-  refine ⟨20 / Real.log (22 / 21), fun T hT ↦ ?_⟩
+      20 / Real.log (22 / 21) * Real.log (T + 2) := by
   have hfin : (zetaZeroesIn (Ioo 0 1) (Icc T (T + 1))).Finite :=
     zetaZeroesIn_finite Ioo_subset_Icc_self subset_rfl
   rw [zetaZeroesSum_eq_sum hfin]
@@ -233,5 +226,13 @@ theorem exists_zetaZeroesSum_le : ∃ C : ℝ, ∀ T : ℝ, 0 ≤ T →
   calc ∑ ρ ∈ S₁, (zetaOrder ρ : ℝ) + ∑ ρ ∈ S₂, (zetaOrder ρ : ℝ)
       ≤ 2 * (10 * Real.log (T + 2) / Real.log (22 / 21)) := by linarith
     _ = 20 / Real.log (22 / 21) * Real.log (T + 2) := by ring
+
+/-- **Montgomery–Vaughan, Theorem 10.13**: there are `O(log (T + 2))` zeros `ρ = β + iγ` of `ζ`
+with `0 < β < 1` and `T ≤ γ ≤ T + 1`, counted with multiplicity. This is the proposition
+`Theorem_10_13` of `ExplicitFormula.lean`. -/
+theorem exists_zetaZeroesSum_le : ∃ C : ℝ, ∀ T : ℝ, 0 ≤ T →
+    zetaZeroesSum (Set.Ioo 0 1) (Set.Icc T (T + 1)) (fun _ ↦ (1 : ℝ)) ≤
+      C * Real.log (T + 2) :=
+  ⟨_, fun _ hT ↦ zetaZeroesSum_le_log hT⟩
 
 end WeilExplicitFormula
