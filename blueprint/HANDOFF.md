@@ -16,8 +16,8 @@ Read, in this order, before doing anything:
 
 ## Coordination (updated 27 November 2026, afternoon)
 
-Another chat works on the same project, in branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26` (head `737b220f`:
-eight commits on top of `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges
+Another chat works on the same project, in branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26` (head `63186f0e`:
+nine commits on top of `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges
 cleanly into `weil-explicit-formula`). That chat reports no `sorry` and no axioms beyond `propext`,
 `Classical.choice`, `Quot.sound`.
 - **Done there:** Part A (the Fourier integral theorem), Part B (Theorem C.5, Lemma 12.14, the digamma bounds), and
@@ -27,7 +27,10 @@ cleanly into `weil-explicit-formula`). That chat reports no `sorry` and no axiom
   hypotheses are verbatim copies of the IEANTN statements `WeilExplicitFormula.v1.theorem_12_13`,
   `ZetaGoodHeights.v1.theorem_10_13`, `ZetaGoodHeights.v1.lemma_12_2` and
   `ContourIntegration.v1.residue_theorem_rectangle`, and IEANTN's `zetaZeroesIn`, `zetaOrder`, `zetaZeroesSum` are
-  copied verbatim into the library too (checked from claude.ai; `Phi` writes `π` for `Real.pi`).
+  copied verbatim into the library too (checked from claude.ai; `Phi` writes `π` for `Real.pi`). Since `63186f0e`
+  the drafts' finsum statements of D1 and 12.13 are proved too, with those hypotheses added
+  (`rectIntegral_mul_logDeriv_of`, `IsTestFunction.tendsto_sum_zeros_of`,
+  `IsTestFunction.tendsto_sum_riemannZeta_zeros_of`).
 - **Decided by Harald (27 November):** the other chat also proves, in the library, Theorem 10.13 and Lemma 12.2
   (following `blueprint/proofs/GoodHeights.md`) and the equivalence of Montgomery–Vaughan's printed hypotheses
   (12.20)–(12.21) with the node's form. It also added the uniform digamma bound; neither node imports
@@ -91,7 +94,7 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
      `blueprint/port/additions-to-mathlib-files.patch`. The only deleted lines (two) are inside a proof in
      `Partition/Basic.lean` and need not be carried over.
 
-   Then **branch `mv-lemma-12-14`** (the other chat's; `dirichlet-jordan` plus eight commits, head `737b220f`, so
+   Then **branch `mv-lemma-12-14`** (the other chat's; `dirichlet-jordan` plus nine commits, head `63186f0e`, so
    port from it) **adds 13 files** (about 6,300 lines):
    `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean`,
    `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing,FourierIntegral}.lean`, and

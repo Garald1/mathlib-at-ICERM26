@@ -240,7 +240,9 @@ and IEANTN's `zetaZeroesIn`, `zetaOrder`, `zetaZeroesSum` are copied too (all ch
 containing the zeros); G1 and the final theorem use `zetaZeroesSum`, so the drafts' `sum_zeros_eq_rectIntegral`,
 `tendsto_sum_zeros` and `tendsto_sum_riemannZeta_zeros` are not proved as written, and neither are `riemannXi_conj`
 and `zeroMult` (not needed). F3 is `IsTestFunction.tendsto_integral_Phi_mul_logDeriv`; G5 is
-`IsTestFunction.tendsto_integral_gammaFactor_half`.
+`IsTestFunction.tendsto_integral_gammaFactor_half`. Since `63186f0e` the drafts' finsum statements are proved as
+well, under the drafts' names with `_of` appended and the three hypotheses added: `rectIntegral_mul_logDeriv_of`,
+`IsTestFunction.tendsto_sum_zeros_of`, `IsTestFunction.tendsto_sum_riemannZeta_zeros_of` (with `zeroMult` as drafted).
 
 ## 3. Order of work
 
