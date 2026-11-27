@@ -799,4 +799,42 @@ theorem exists_norm_digamma_le {a : ℝ} (ha : 0 < a) :
         exact mul_le_mul_of_nonneg_left hlog (norm_nonneg _)
     _ = (‖digamma a‖ / Real.log 2 + K) * Real.log (2 + |t|) := by ring
 
+/-- `ψ(σ + it) ≪ log (|t| + 2)`, uniformly for `σ` in a compact interval `[σ₁, σ₂] ⊂ (0, ∞)`. -/
+theorem exists_norm_digamma_le_log {σ₁ σ₂ : ℝ} (h₁ : 0 < σ₁) :
+    ∃ C, ∀ σ t : ℝ, σ ∈ Icc σ₁ σ₂ → ‖digamma (σ + t * I)‖ ≤ C * Real.log (|t| + 2) := by
+  have hcont : ContinuousOn (fun σ : ℝ ↦ digamma σ) (Icc σ₁ σ₂) :=
+    differentiableOn_digamma.continuousOn.comp continuous_ofReal.continuousOn
+      (fun σ hσ ↦ by change 0 < (σ : ℂ).re; rw [ofReal_re]; exact h₁.trans_le hσ.1)
+  obtain ⟨M, hM⟩ := isCompact_Icc.exists_bound_of_continuousOn hcont
+  set m := min σ₁ 1 with hm
+  have hm0 : 0 < m := lt_min h₁ one_pos
+  set K := 2 * (1 / m ^ 2 + 1 / m) with hK
+  have hK0 : 0 ≤ K := by positivity
+  have hl2 : 0 < Real.log 2 := Real.log_pos one_lt_two
+  refine ⟨max M 0 / Real.log 2 + K, fun σ t hσ ↦ ?_⟩
+  have hσ0 : 0 < σ := h₁.trans_le hσ.1
+  have hmσ : m ≤ min σ 1 := min_le_min hσ.1 le_rfl
+  have hKσ : 2 * (1 / min σ 1 ^ 2 + 1 / min σ 1) ≤ K := by
+    have h1 : 1 / min σ 1 ≤ 1 / m := one_div_le_one_div_of_le hm0 hmσ
+    have h2 : 1 / min σ 1 ^ 2 ≤ 1 / m ^ 2 :=
+      one_div_le_one_div_of_le (by positivity) (by gcongr)
+    linarith
+  have hlog : Real.log 2 ≤ Real.log (|t| + 2) :=
+    Real.log_le_log two_pos (by linarith [abs_nonneg t])
+  have hlog' : Real.log (1 + |t|) ≤ Real.log (|t| + 2) :=
+    Real.log_le_log (by positivity) (by linarith)
+  have hlog0 : 0 ≤ Real.log (1 + |t|) := Real.log_nonneg (by linarith [abs_nonneg t])
+  have hMσ : ‖digamma σ‖ ≤ max M 0 := (hM σ hσ).trans (le_max_left _ _)
+  have hM2 : max M 0 ≤ max M 0 / Real.log 2 * Real.log (|t| + 2) := by
+    rw [div_mul_eq_mul_div, le_div_iff₀ hl2]
+    exact mul_le_mul_of_nonneg_left hlog (le_max_right _ _)
+  calc ‖digamma (σ + t * I)‖ ≤ ‖digamma σ‖ + ‖digamma (σ + t * I) - digamma σ‖ := by
+        simpa using norm_add_le (digamma σ) (digamma (σ + t * I) - digamma σ)
+    _ ≤ max M 0 + K * Real.log (1 + |t|) :=
+        add_le_add hMσ ((norm_digamma_sub_le hσ0 t).trans
+          (mul_le_mul_of_nonneg_right hKσ hlog0))
+    _ ≤ max M 0 / Real.log 2 * Real.log (|t| + 2) + K * Real.log (|t| + 2) :=
+        add_le_add hM2 (mul_le_mul_of_nonneg_left hlog' hK0)
+    _ = (max M 0 / Real.log 2 + K) * Real.log (|t| + 2) := by ring
+
 end Complex
