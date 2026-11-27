@@ -15,6 +15,10 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.DigammaSeries
 There is a constant `C` such that for every `T ≥ 2` there is `T₁ ∈ [T, T + 1]` with
 `ζ(σ + iT₁) ≠ 0` and `‖ζ'/ζ(σ + iT₁)‖ ≤ C log² T` for all `-1 ≤ σ ≤ 2` (`exists_good_height`,
 which is the statement `Lemma_12_2` of `ExplicitFormula.lean`, i.e. `IEANTN`'s node).
+`exists_good_height_of` proves it from the functional equation of `ζ'/ζ` in the form
+`LogDerivFunctionalEquation` (the statement of `IEANTN`'s
+`ZetaLogDeriv.v1.logDeriv_functional_equation`, which `IEANTN`'s `lemma_12_2` imports);
+`exists_good_height` supplies it from `ZetaLogDeriv.lean` (`logDeriv_functional_equation`).
 
 The proof follows `blueprint/proofs/GoodHeights.md`, §§3–4, without the Hadamard product:
 * §3, the local expansion (`exists_finset_logDeriv_riemannZeta_sub_sum_le`): Landau's lemma
@@ -26,7 +30,7 @@ The proof follows `blueprint/proofs/GoodHeights.md`, §§3–4, without the Hada
   (`zetaZeroesSum_le_log`) on five intervals of length one;
 * `1/2 ≤ σ ≤ 2`: the zeros in the local expansion are in `Z`, at distance at least
   `1/(2(|Z| + 1))` from `σ + iT₁`;
-* `-1 ≤ σ < 1/2`: the functional equation of `ζ'/ζ` (`logDeriv_riemannZeta_one_sub`), the case
+* `-1 ≤ σ < 1/2`: the functional equation of `ζ'/ζ` (`LogDerivFunctionalEquation`), the case
   `1/2 < σ ≤ 2` at `1 - s̄ = (1 - σ) + iT₁`, `ψ(s) = ψ(s + 2) - 1/s - 1/(s + 1)` with the library's
   `Complex.exists_norm_digamma_le_log` on `1 ≤ Re ≤ 5/2`, and `|tan(πs/2)| ≤ 2`.
 
@@ -424,7 +428,8 @@ theorem norm_logDeriv_riemannZeta_le_right (hT₁ : T₁ ∈ Icc T (T + 1)) (hT 
   linarith
 
 /-- `-1 ≤ σ < 1/2`, by the functional equation of `ζ'/ζ` (`GoodHeights.md` §4). -/
-theorem norm_logDeriv_riemannZeta_le_left (hT₁ : 2 ≤ T₁) {σ : ℝ} (hσ : σ < 1 / 2)
+theorem norm_logDeriv_riemannZeta_le_left (hFE : LogDerivFunctionalEquation) (hT₁ : 2 ≤ T₁)
+    {σ : ℝ} (hσ : σ < 1 / 2)
     (hσ' : -1 ≤ σ) (hz : riemannZeta (σ + T₁ * I) ≠ 0) {B : ℝ}
     (hB : ‖logDeriv riemannZeta ((1 - σ : ℝ) + T₁ * I)‖ ≤ B) {CD : ℝ}
     (hCD : ∀ σ' t : ℝ, σ' ∈ Icc 1 (5 / 2) → ‖digamma (σ' + t * I)‖ ≤ CD * Real.log (|t| + 2)) :
@@ -435,7 +440,9 @@ theorem norm_logDeriv_riemannZeta_le_left (hT₁ : 2 ≤ T₁) {σ : ℝ} (hσ :
   have him0 : s.im ≠ 0 := by rw [him]; linarith
   have hsn : ∀ n : ℕ, s ≠ -n := fun n h ↦ him0 (by rw [h]; simp)
   have hs1 : s ≠ 1 := fun h ↦ him0 (by rw [h]; simp)
-  have hFE := logDeriv_riemannZeta_one_sub hsn hs1 hz (cos_pi_mul_div_two_ne_zero him0)
+  have hfe : logDeriv riemannZeta s = -logDeriv riemannZeta (1 - s) + Complex.log (2 * π) -
+      digamma s + π / 2 * Complex.tan (π * s / 2) := by
+    simpa only [logDeriv_apply] using hFE s hsn hs1 hz (cos_pi_mul_div_two_ne_zero him0)
   -- `1 - s = conj ((1 - σ) + iT₁)`
   have hconj : 1 - s = conj (((1 - σ : ℝ) : ℂ) + T₁ * I) := by
     rw [hs]
@@ -487,7 +494,7 @@ theorem norm_logDeriv_riemannZeta_le_left (hT₁ : 2 ≤ T₁) {σ : ℝ} (hσ :
     have := norm_tan_le_two hT
     norm_num
     nlinarith [Real.pi_pos]
-  rw [hFE]
+  rw [hfe]
   calc ‖-logDeriv riemannZeta (1 - s) + Complex.log (2 * π) - digamma s +
         π / 2 * Complex.tan (π * s / 2)‖
       ≤ ‖logDeriv riemannZeta (1 - s)‖ + ‖Complex.log (2 * π)‖ + ‖digamma s‖ +
@@ -570,7 +577,8 @@ theorem good_height_arith {X nZ N K₀ Λ CD T : ℝ} (hT : 2 ≤ T) (hK₀ : 0 
 /-- **Montgomery–Vaughan, Lemma 12.2**: there is `C` such that for every `T ≥ 2` there is
 `T₁ ∈ [T, T + 1]` with `ζ(σ + iT₁) ≠ 0` and `‖ζ'/ζ(σ + iT₁)‖ ≤ C log² T` for `-1 ≤ σ ≤ 2`.
 This is the proposition `Lemma_12_2` of `ExplicitFormula.lean`. -/
-theorem exists_good_height : ∃ C : ℝ, ∀ T : ℝ, 2 ≤ T → ∃ T₁ ∈ Set.Icc T (T + 1),
+theorem exists_good_height_of (hFE : LogDerivFunctionalEquation) :
+    ∃ C : ℝ, ∀ T : ℝ, 2 ≤ T → ∃ T₁ ∈ Set.Icc T (T + 1),
     ∀ σ ∈ Set.Icc (-1 : ℝ) 2,
       riemannZeta (σ + T₁ * Complex.I) ≠ 0 ∧
         ‖deriv riemannZeta (σ + T₁ * Complex.I) / riemannZeta (σ + T₁ * Complex.I)‖ ≤
@@ -618,7 +626,7 @@ theorem exists_good_height : ∃ C : ℝ, ∀ T : ℝ, 2 ≤ T → ∃ T₁ ∈ 
   have hpi := Real.pi_pos
   have hlog2π : 0 ≤ Real.log (2 * π) := Real.log_nonneg (by nlinarith [Real.pi_gt_three])
   rcases lt_or_ge σ (1 / 2) with hσ' | hσ'
-  · have h := norm_logDeriv_riemannZeta_le_left hT₁2 hσ' hσ.1 hz
+  · have h := norm_logDeriv_riemannZeta_le_left hFE hT₁2 hσ' hσ.1 hz
       (hright (1 - σ) ⟨by linarith, by linarith [hσ.1]⟩) hCD
     have hlog : CD * Real.log (T₁ + 2) ≤ |CD| * Real.log (T + 3) := by
       calc CD * Real.log (T₁ + 2) ≤ |CD| * Real.log (T₁ + 2) :=
@@ -631,5 +639,14 @@ theorem exists_good_height : ∃ C : ℝ, ∀ T : ℝ, 2 ≤ T → ∃ T₁ ∈ 
     have : 0 ≤ |CD| * Real.log (T + 3) :=
       mul_nonneg (abs_nonneg _) (Real.log_nonneg (by linarith))
     linarith
+
+/-- **Montgomery–Vaughan, Lemma 12.2**, with the functional equation of `ζ'/ζ` from
+`ZetaLogDeriv.lean`. -/
+theorem exists_good_height : ∃ C : ℝ, ∀ T : ℝ, 2 ≤ T → ∃ T₁ ∈ Set.Icc T (T + 1),
+    ∀ σ ∈ Set.Icc (-1 : ℝ) 2,
+      riemannZeta (σ + T₁ * Complex.I) ≠ 0 ∧
+        ‖deriv riemannZeta (σ + T₁ * Complex.I) / riemannZeta (σ + T₁ * Complex.I)‖ ≤
+          C * Real.log T ^ 2 :=
+  exists_good_height_of logDeriv_functional_equation
 
 end WeilExplicitFormula

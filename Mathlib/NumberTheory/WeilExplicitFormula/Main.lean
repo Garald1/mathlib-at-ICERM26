@@ -16,6 +16,11 @@ public import Mathlib.NumberTheory.WeilExplicitFormula.GoodHeights
 proved in `ZeroCount.lean` and `GoodHeights.lean`; here they are restated under the names of the
 propositions, and `Theorem_12_13` is derived from the residue theorem alone.
 
+As in `IEANTN`, where `ZetaGoodHeights.v1.lemma_12_2` imports
+`ZetaLogDeriv.v1.logDeriv_functional_equation`, `lemma_12_2_of` derives `Lemma_12_2` from the
+functional equation of `ζ'/ζ` in that form (`LogDerivFunctionalEquation`); `lemma_12_2` supplies
+it from `ZetaLogDeriv.lean`.
+
 ## AI usage
 
 This file was written by Claude (Anthropic) in November 2026. It compiles, but has not been
@@ -31,8 +36,13 @@ namespace WeilExplicitFormula
 /-- Montgomery–Vaughan, Theorem 10.13, in the form of `IEANTN`'s node. -/
 theorem theorem_10_13 : Theorem_10_13 := exists_zetaZeroesSum_le
 
+/-- Montgomery–Vaughan, Lemma 12.2, in the form of `IEANTN`'s node, from the functional equation
+of `ζ'/ζ` in the form of `IEANTN`'s `ZetaLogDeriv.v1.logDeriv_functional_equation`. -/
+theorem lemma_12_2_of (hFE : LogDerivFunctionalEquation) : Lemma_12_2 :=
+  exists_good_height_of hFE
+
 /-- Montgomery–Vaughan, Lemma 12.2, in the form of `IEANTN`'s node. -/
-theorem lemma_12_2 : Lemma_12_2 := exists_good_height
+theorem lemma_12_2 : Lemma_12_2 := lemma_12_2_of logDeriv_functional_equation
 
 /-- Montgomery–Vaughan, Theorem 12.13 (`q = 1`), from the residue theorem for rectangles. -/
 theorem theorem_12_13_of_residueTheorem (hres : ResidueTheoremRectangle) : Theorem_12_13 :=
