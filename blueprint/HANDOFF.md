@@ -75,7 +75,7 @@ If he already has clones of the repositories below elsewhere in `~/Documents/lea
 An IEANTN solution must use the core's Mathlib revision and cannot depend on a fork of Mathlib, so the code has to
 become packages of its own, pinned to IEANTN's Lean and Mathlib. **Harald's decision (27 November): the ICERM library
 keeps its own identity.** It holds basic Riemann–Stieltjes theory (Montgomery–Vaughan's Appendix A) and the
-Dirichlet–Jordan material already in it (the circle of their Appendix D), and nothing else. Everything written since,
+Dirichlet–Jordan theorem as in Wheeden–Zygmund (12.50), already in it, and nothing else. Everything written since,
 for the explicit formula, goes into a second package that requires the first.
 
 1. Repositories, both **public** (IEANTN's verification and the Palomar spin-off must fetch them at published commits):

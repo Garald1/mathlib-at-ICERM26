@@ -295,9 +295,9 @@ Theorem 10.13, Lemma 12.2 and the residue theorem on rectangles, taken as hypoth
    IEANTN's `standard` kind is for: "textbook mathematics that Mathlib happens not to have, stated once so several
    nodes can import it instead of each carrying its own copy" (`docs/NODES.md`).
 7. (27 November 2026, afternoon) **Two packages.** The ICERM library (`RiemannStieltjes`) keeps its own identity:
-   basic Riemann–Stieltjes theory (MV Appendix A) and the Dirichlet–Jordan material already in it (the circle of MV
-   Appendix D; Poisson summation for functions of bounded variation, MV D.2, would fit there too, but nobody has
-   written it and nothing here needs it). Everything else (digamma, the Fourier integral theorem, the explicit
+   basic Riemann–Stieltjes theory (MV Appendix A) and the Dirichlet–Jordan theorem as in Wheeden–Zygmund (12.50),
+   all three parts, already in it (`Stieltjes/DirichletJordan.lean`, with Fejér, Hardy's Tauberian theorem and the
+   bound (12.24) for the Fourier coefficients of a function of bounded variation). Everything else (digamma, the Fourier integral theorem, the explicit
    formula, 10.13 and 12.2, the hypothesis equivalence) goes into a second package that requires it (proposed name
    `WeilExplicitFormula`). The residue theorem goes into neither: it becomes the solution of `ContourIntegration.v1`.
 
