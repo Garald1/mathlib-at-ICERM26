@@ -260,10 +260,11 @@ See `blueprint/HANDOFF.md`, which turns this into tasks for Claude Code:
 Rough size: A 600–900 lines, B 800–1200, C 1000–1500, D 200–400, E 200–300, F 300–500, G 500–800.
 
 **State (27 November 2026, evening).** All of the mathematics is done, in another chat, on the fork's Mathlib
-(branch `mv-lemma-12-14`, head `e62f9988`; about 9,700 lines; see the **L** entries in §2):
+(branch `mv-lemma-12-14`, head `4999d334`; about 9,700 lines; see the **L** entries in §2):
 `WeilExplicitFormula.theorem_10_13`, `WeilExplicitFormula.lemma_12_2`, `ResidueRectangle.residue_theorem_rectangle`
 (Mathlib-only) and `theorem_12_13_of_residueTheorem` together give `Theorem_12_13`, the node's statement, with no
-hypotheses; `isTestFunctionNode_iff` proves the equivalence of (12.20)–(12.21), as printed, with the node's
+hypotheses (and `lemma_12_2_of` gives Lemma 12.2 from the functional equation of $\zeta'/\zeta$ as a hypothesis, as
+the node imports it); `isTestFunctionNode_iff` proves the equivalence of (12.20)–(12.21), as printed, with the node's
 hypotheses. Left, all on the laptop through Claude Code: the port of the two packages to IEANTN's pin, the
 reactivation of `ContourIntegration.v1`, and the three IEANTN solutions (`ContourIntegration.v1` from
 `ResidueRectangle.lean`; `ZetaGoodHeights.v1` and `WeilExplicitFormula.v1` by unfolding); then the pull requests,

@@ -16,8 +16,8 @@ Read, in this order, before doing anything:
 
 ## Coordination (updated 27 November 2026, evening)
 
-Another chat works on the same project, in branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26` (head `e62f9988`:
-thirteen commits on top of `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges
+Another chat works on the same project, in branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26` (head `4999d334`:
+fourteen commits on top of `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges
 cleanly into `weil-explicit-formula`). That chat reports no `sorry` and no axioms beyond `propext`,
 `Classical.choice`, `Quot.sound`.
 
@@ -25,7 +25,8 @@ cleanly into `weil-explicit-formula`). That chat reports no `sorry` and no axiom
 - Part A (the Fourier integral theorem), Part B (Theorem C.5, Lemma 12.14, the digamma bounds);
 - **Theorem 12.13 (q = 1) from three hypotheses**: `WeilExplicitFormula.theorem_12_13_of (h1013 : Theorem_10_13)
   (h122 : Lemma_12_2) (hres : ResidueTheoremRectangle) : Theorem_12_13` (`NumberTheory/WeilExplicitFormula/ExplicitFormula.lean`);
-- **Theorem 10.13 and Lemma 12.2**: `WeilExplicitFormula.theorem_10_13 : Theorem_10_13` and
+- **Theorem 10.13 and Lemma 12.2**: `WeilExplicitFormula.theorem_10_13 : Theorem_10_13`,
+  `WeilExplicitFormula.lemma_12_2_of (hFE : LogDerivFunctionalEquation) : Lemma_12_2` (added in `4999d334`) and
   `WeilExplicitFormula.lemma_12_2 : Lemma_12_2` (`Main.lean`; proofs in `ZetaBounds`, `ZeroCount`, `ZetaLogDeriv`,
   `Landau`, `GoodHeights`), and `theorem_12_13_of_residueTheorem (hres) : Theorem_12_13`;
 - **the residue theorem on rectangles**: `ResidueRectangle.residue_theorem_rectangle`, in
@@ -104,8 +105,8 @@ for the explicit formula, goes into a second package that requires the first.
      `blueprint/port/additions-to-mathlib-files.patch`. The only deleted lines (two) are inside a proof in
      `Partition/Basic.lean` and need not be carried over.
 
-   **Into `WeilExplicitFormula`:** branch `mv-lemma-12-14` (the other chat's; `dirichlet-jordan` plus thirteen commits,
-   head `e62f9988`, so port from it) **adds 20 files** (about 8,850 lines):
+   **Into `WeilExplicitFormula`:** branch `mv-lemma-12-14` (the other chat's; `dirichlet-jordan` plus fourteen commits,
+   head `4999d334`, so port from it) **adds 20 files** (about 8,850 lines):
    `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean`,
    `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing,FourierIntegral}.lean`, and
    `Mathlib/NumberTheory/WeilExplicitFormula/{TestFunction,TranslateSum,PrimeSum,CriticalLine,Rectangle,Xi,Contour,ExplicitFormula,ZetaBounds,ZeroCount,ZetaLogDeriv,Landau,GoodHeights,Hypotheses,Main}.lean`.
@@ -126,7 +127,9 @@ for the explicit formula, goes into a second package that requires the first.
    directly into IEANTN's `Solutions/ContourIntegration.v1/`, the one place that proof will live, and into neither
    package. (The explicit formula only needs its statement, `ResidueTheoremRectangle`, as a hypothesis.)
 
-   `Stieltjes/Unused.lean` says of itself that it is not in use: ask Harald before dropping it. Keep every file's
+   `Stieltjes/Unused.lean` (Terence Tao's, from the ICERM branch: a lexicographic order on one-dimensional boxes)
+   says of itself that it is not in use. Nothing imports it, and the umbrella `Mathlib.lean` imports none of the
+   library's files, so building the other modules does not check it: ask Harald before dropping it. Keep every file's
    copyright header and author list as it is.
 4. Module names `RiemannStieltjes.<path as in Mathlib>` and `WeilExplicitFormula.<path as in Mathlib>`; keep
    namespaces and declaration names unchanged, so that the code can later go into Mathlib without renaming.
@@ -146,8 +149,8 @@ for the explicit formula, goes into a second package that requires the first.
    `IEANTN/Nodes/WeilExplicitFormula/v1/` and `IEANTN/Nodes/ZetaGoodHeights/v1/`, registering them wherever
    `docs/NODES.md` says nodes are registered. Run `python scripts/ieantn.py gen-challenges`,
    `python scripts/ieantn.py fingerprint`, `lake build`, `python scripts/ieantn.py check`, and fix what fails.
-   `ContourIntegration.v1` is `inactive`: report what `check` says about importing it, but do not change its status —
-   that is for Harald to agree with the maintainers. Do not commit generated views (`STATE.md`, `GRAPH.md`,
+   Base the branch on `reactivate-contour-integration` (Task 5), which reactivates `ContourIntegration.v1`: `check-graph`
+   fails an edge onto an inactive node. Do not commit generated views (`STATE.md`, `GRAPH.md`,
    `docs/graph.html`, `docs/nodes/`). Push the branch to `Garald1/ieantn`; no pull request.
 3. `blueprint/drafts/WeilExplicitFormula.lean` holds statements of the intermediate lemmas about ζ (C1–C7, D1, E, F,
    G), written against the old Mathlib fork. Superseded: the other chat's `NumberTheory/WeilExplicitFormula/` files
@@ -204,8 +207,8 @@ Description:
 Base the Task 2 branch (the node drafts) on this branch until it is merged: `WeilExplicitFormula.v1` imports this node,
 and `check-graph` fails an edge onto an inactive node.
 
-**Solution.** The proof is `Mathlib/Analysis/Complex/ResidueRectangle.lean` on `mv-lemma-12-14` (commit `e62f9988`;
-Mathlib-only, five imports; its theorem `ResidueRectangle.residue_theorem_rectangle` states the node's conclusion
+**Solution.** The proof is `Mathlib/Analysis/Complex/ResidueRectangle.lean` on `mv-lemma-12-14` (added in `e62f9988`,
+unchanged since; Mathlib-only, five imports; its theorem `ResidueRectangle.residue_theorem_rectangle` states the node's conclusion
 verbatim). It goes into IEANTN as this node's solution, and nowhere else (not into either package):
 1. Copy it to `Solutions/ContourIntegration.v1/ResidueRectangle.lean`. Delete the lines `module` and
    `@[expose] public section`, and change `public import` to `import` (compare `Solutions/CH2.v3/ResiduePort.lean`).
@@ -234,9 +237,9 @@ verbatim). It goes into IEANTN as this node's solution, and nowhere else (not in
 `WeilExplicitFormula.lemma_12_2 : Lemma_12_2`. Its proof of Lemma 12.2 proves the functional equation of ζ'/ζ
 itself (`ZetaLogDeriv.lean`, as `LogDerivFunctionalEquation`, a verbatim copy of
 `ZetaLogDeriv.v1.logDeriv_functional_equation`). The node keeps importing `ZetaLogDeriv.v1` (decision 3 of the
-blueprint: import the nodes already there), so the solution should use the imported statement, through a library
-theorem `lemma_12_2_of (hFE : LogDerivFunctionalEquation) : Lemma_12_2`, which the other chat has been asked to add.
-If it is not there when you get to Task 7, ask Harald. The IEANTN solution itself is part of Task 7.
+blueprint: import the nodes already there), so the solution should use the imported statement, through the library
+theorem `lemma_12_2_of (hFE : LogDerivFunctionalEquation) : Lemma_12_2` (added in `4999d334`). The IEANTN solution
+itself is part of Task 7.
 
 ## Task 7 — the IEANTN solutions for `WeilExplicitFormula.v1` and `ZetaGoodHeights.v1`
 
@@ -267,8 +270,8 @@ go in `STATUS.md` and the commit messages.
 > horizontal sides). The first imports `ContourIntegration.v1` (`residue_theorem_rectangle`) and both conclusions of
 > `ZetaGoodHeights.v1`; it does not use `ZetaHadamard.v1`, since the proofs go through Jensen's inequality and the
 > Borel–Carathéodory lemma rather than the Hadamard product, nor `ZetaZeroes.v1`, since Mathlib's
-> `IsCompact.inter_riemannZetaZeros_finite` and the functional equation of ξ suffice. The second imports
-> `ZetaLogDeriv.v1` [if the solution takes it as a hypothesis].
+> `IsCompact.inter_riemannZetaZeros_finite` and the functional equation of ξ suffice. In the second,
+> Lemma 12.2 imports `ZetaLogDeriv.v1` (the functional equation of ζ'/ζ).
 >
 > A proof of the first from exactly these imports already exists. This needs `ContourIntegration.v1` reactivated; I
 > plan to supply a solution for it. The solutions rest on two pinned packages on the core's Mathlib pin (a
