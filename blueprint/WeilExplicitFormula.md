@@ -290,9 +290,16 @@ Theorem 10.13, Lemma 12.2 and the residue theorem on rectangles, taken as hypoth
    and writes the IEANTN solutions, which then come by unfolding definitions.
 6. (27 November 2026, afternoon) **`ContourIntegration.v1` is reactivated now** (its own recorded reason anticipates
    it: "the first thing to reactivate if a future node needs contour integration"), and **its proof is written once**,
-   in the library by the other chat, as `ResidueTheoremRectangle`; the IEANTN solution unfolds to it. This is what
+   by the other chat as Mathlib-only file(s), which become IEANTN's `Solutions/ContourIntegration.v1/` (refined the
+   same day: in neither package, see decision 7). This is what
    IEANTN's `standard` kind is for: "textbook mathematics that Mathlib happens not to have, stated once so several
    nodes can import it instead of each carrying its own copy" (`docs/NODES.md`).
+7. (27 November 2026, afternoon) **Two packages.** The ICERM library (`RiemannStieltjes`) keeps its own identity:
+   basic Riemann–Stieltjes theory (MV Appendix A) and the Dirichlet–Jordan material already in it (the circle of MV
+   Appendix D; Poisson summation for functions of bounded variation, MV D.2, would fit there too, but nobody has
+   written it and nothing here needs it). Everything else (digamma, the Fourier integral theorem, the explicit
+   formula, 10.13 and 12.2, the hypothesis equivalence) goes into a second package that requires it (proposed name
+   `WeilExplicitFormula`). The residue theorem goes into neither: it becomes the solution of `ContourIntegration.v1`.
 
 ## 5. IEANTN integration
 

@@ -65,19 +65,26 @@ after cloning this branch into `plan/` with
 If he already has clones of the repositories below elsewhere in `~/Documents/lean`, ask before making new ones.
 - `plan/` — this branch (`weil-explicit-formula` of `Garald1/mathlib-at-icerm26`). Besides the blueprint, it contains
   the Riemann–Stieltjes files, since it is based on `dirichlet-jordan`.
-- `RiemannStieltjes/` — the library, created in Task 1.
+- `RiemannStieltjes/` — the ICERM library (Riemann–Stieltjes theory), created in Task 1.
+- `WeilExplicitFormula/` — the second package (everything else the proof needs), created in Task 1.
 - `ieantn/` — Harald's fork `Garald1/ieantn` (use his existing clone if he has one), brought up to date with
   `teorth/IEANTN` `main` before starting.
 
-## Task 1 — the Riemann–Stieltjes library as a standalone Lake package
+## Task 1 — two standalone Lake packages: the ICERM library, and the rest
 
-An IEANTN solution must use the core's Mathlib revision and cannot depend on a fork of Mathlib, so the library has to
-become its own package, pinned to IEANTN's Lean and Mathlib.
+An IEANTN solution must use the core's Mathlib revision and cannot depend on a fork of Mathlib, so the code has to
+become packages of its own, pinned to IEANTN's Lean and Mathlib. **Harald's decision (27 November): the ICERM library
+keeps its own identity.** It holds basic Riemann–Stieltjes theory (Montgomery–Vaughan's Appendix A) and the
+Dirichlet–Jordan material already in it (the circle of their Appendix D), and nothing else. Everything written since,
+for the explicit formula, goes into a second package that requires the first.
 
-1. Ask Harald to confirm the repository name (proposed: `Garald1/RiemannStieltjes`, private at first) and create it.
-2. Lake package `RiemannStieltjes`: `lean-toolchain` identical to IEANTN's; `require mathlib` at IEANTN's Mathlib
-   commit, as a full 40-character hash.
-3. What to port. Relative to upstream Mathlib commit `09370b01` (the last upstream merge into the workshop branch,
+1. Repositories, both **public** (IEANTN's verification and the Palomar spin-off must fetch them at published commits):
+   `Garald1/RiemannStieltjes` (Lake package `RiemannStieltjes`) and, for the rest, a second one (proposed:
+   `Garald1/WeilExplicitFormula`, Lake package `WeilExplicitFormula`). Ask Harald to confirm the second name, then
+   create both.
+2. Both packages: `lean-toolchain` identical to IEANTN's; `require mathlib` at IEANTN's Mathlib commit, as a full
+   40-character hash. `WeilExplicitFormula` also requires `RiemannStieltjes`, pinned at a commit.
+3. What to port. **Into `RiemannStieltjes`:** relative to upstream Mathlib commit `09370b01` (the last upstream merge into the workshop branch,
    18 May 2026; the full `git diff --stat` is in `blueprint/port/diffstat-against-mathlib-09370b01.txt`), branch
    `dirichlet-jordan` does the following, and nothing else:
    - **adds 18 files** (about 7,600 lines):
@@ -94,7 +101,7 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
      `blueprint/port/additions-to-mathlib-files.patch`. The only deleted lines (two) are inside a proof in
      `Partition/Basic.lean` and need not be carried over.
 
-   Then **branch `mv-lemma-12-14`** (the other chat's; `dirichlet-jordan` plus nine commits, head `63186f0e`, so
+   **Into `WeilExplicitFormula`:** branch `mv-lemma-12-14` (the other chat's; `dirichlet-jordan` plus nine commits, head `63186f0e`, so
    port from it) **adds 13 files** (about 6,300 lines):
    `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean`,
    `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing,FourierIntegral}.lean`, and
@@ -110,12 +117,15 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
    to fix the fork's build: **do not port that.** `Complex.hasSum_digamma` (in `DigammaSeries.lean`) is the Gauss
    series for Re s > 0, proved independently of `GammaSolution.digamma_eq_gaussSum` in IEANTN's
    `Solutions/GammaAsymptotics.v2`: use the library's, and do not copy the IEANTN one into the library. Whatever the
-   other chat adds later is ported the same way.
+   other chat adds later is ported the same way (Theorem 10.13 and Lemma 12.2, the (12.20)–(12.21) equivalence),
+   **except the residue theorem on rectangles**: the other chat writes it as Mathlib-only file(s), and they go
+   directly into IEANTN's `Solutions/ContourIntegration.v1/`, the one place that proof will live, and into neither
+   package. (The explicit formula only needs its statement, `ResidueTheoremRectangle`, as a hypothesis.)
 
    `Stieltjes/Unused.lean` says of itself that it is not in use: ask Harald before dropping it. Keep every file's
    copyright header and author list as it is.
-4. Module names `RiemannStieltjes.<path as in Mathlib>`; keep namespaces and declaration names unchanged, so that the
-   library can later go back into Mathlib without renaming.
+4. Module names `RiemannStieltjes.<path as in Mathlib>` and `WeilExplicitFormula.<path as in Mathlib>`; keep
+   namespaces and declaration names unchanged, so that the code can later go into Mathlib without renaming.
 5. Port to the newer Mathlib with the smallest changes that work; record each kind of change in `PORTING.md`.
 6. `lake build` clean (no `sorry`). Commit, push, update `STATUS.md`.
 
@@ -237,8 +247,8 @@ go in `STATUS.md` and the commit messages.
 > `ZetaLogDeriv.v1` [if the solution takes it as a hypothesis].
 >
 > A proof of the first from exactly these imports already exists. This needs `ContourIntegration.v1` reactivated; I
-> plan to supply a solution for it. The solutions rest on a pinned Riemann–Stieltjes library (a standalone package on
-> the core's Mathlib pin), as `docs/ARCHITECTURE.md` allows; the estimates for the digamma function that the proofs
+> plan to supply a solution for it. The solutions rest on two pinned packages on the core's Mathlib pin (a
+> Riemann–Stieltjes library, and one with the rest of the proof), as `docs/ARCHITECTURE.md` allows; the estimates for the digamma function that the proofs
 > need (Montgomery–Vaughan Theorem C.5, Lemma 12.14, and a bound uniform on vertical strips) are proved there, so
 > neither node imports `GammaAsymptotics.v1`.
 >
