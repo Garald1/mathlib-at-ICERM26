@@ -38,12 +38,6 @@ conclusions:
   declaration: WeilExplicitFormula.v1.theorem_12_13
   challenge: WeilExplicitFormula.v1.challenge_theorem_12_13
   imports:
-  - node: ZetaZeroes.v1
-    conclusion: finite_zeroes_on_compact
-  - node: ZetaZeroes.v1
-    conclusion: no_nontrivial_zeroes_left
-  - node: ZetaZeroes.v1
-    conclusion: zeroes_off_axis_in_strip
   - node: ContourIntegration.v1
     conclusion: residue_theorem_rectangle
   - node: ZetaGoodHeights.v1
@@ -69,7 +63,9 @@ conclusions:
       Theorem 10.13 and Lemma 12.2 from Jensen's inequality and the Borel-Caratheodory lemma instead,
       and so does not import ZetaHadamard.v1. The digamma estimates (Theorem C.5, Lemma 12.14, and a
       bound for psi uniform on vertical strips) are proved in the pinned Riemann-Stieltjes library,
-      so GammaAsymptotics.v1 is not imported either.
+      so GammaAsymptotics.v1 is not imported either. Nor is ZetaZeroes.v1: the finiteness of the
+      zeroes in compact sets is Mathlib's IsCompact.inter_riemannZetaZeros_finite, and their location
+      follows from xi(1 - s) = xi(s) and the non-vanishing of zeta on Re s >= 1.
   designated: montgomery-vaughan
 
 sources:

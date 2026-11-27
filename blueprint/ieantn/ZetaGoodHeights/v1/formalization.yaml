@@ -31,10 +31,8 @@ conclusions:
 - id: theorem_10_13
   declaration: ZetaGoodHeights.v1.theorem_10_13
   challenge: ZetaGoodHeights.v1.challenge_theorem_10_13
-  imports:
-  - node: ZetaZeroes.v1
-    conclusion: finite_zeroes_on_compact
-  imports_status: identified
+  imports: []
+  imports_status: none
   justifications:
   - id: montgomery-vaughan
     kind: literature
@@ -51,8 +49,6 @@ conclusions:
   declaration: ZetaGoodHeights.v1.lemma_12_2
   challenge: ZetaGoodHeights.v1.challenge_lemma_12_2
   imports:
-  - node: ZetaZeroes.v1
-    conclusion: finite_zeroes_on_compact
   - node: ZetaLogDeriv.v1
     conclusion: logDeriv_functional_equation
   imports_status: identified
@@ -71,8 +67,8 @@ conclusions:
       for 1/2 <= sigma <= 2; and for -1 <= sigma < 1/2 the functional equation of zeta'/zeta
       (ZetaLogDeriv.v1, hence the import) with a bound psi(sigma + it) << log(|t| + 2), uniform for
       1 <= sigma <= 5/2, proved in the pinned Riemann-Stieltjes library (so GammaAsymptotics.v1 is
-      not imported). finite_zeroes_on_compact is imported because the proof goes through
-      theorem_10_13.
+      not imported). The finiteness of the zeroes in compact sets, for this and for theorem_10_13,
+      is Mathlib's IsCompact.inter_riemannZetaZeros_finite, so ZetaZeroes.v1 is not imported.
   designated: montgomery-vaughan
 
 sources:

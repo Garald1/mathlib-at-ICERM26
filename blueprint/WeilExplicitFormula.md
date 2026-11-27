@@ -227,6 +227,21 @@ Rectangle integrals: `Complex.integral_boundary_rect_eq_zero_of_differentiableOn
 - **G5** The three terms on $\sigma=\frac12$ (A5, B5).
 - **G6** From $T_1$ to $T$ (C4, E3). Main theorem.
 
+*Update, 27 November 2026 (afternoon).* C1–C3, D1, E0–E3, F1–F3 and G1–G6 are **L**: eight files in
+`Mathlib/NumberTheory/WeilExplicitFormula/` (about 2,900 lines; branch `mv-lemma-12-14`, commits `9a234c7f`,
+`dd112489`, `737b220f`). The end result is
+`WeilExplicitFormula.theorem_12_13_of (h1013 : Theorem_10_13) (h122 : Lemma_12_2) (hres : ResidueTheoremRectangle) :
+Theorem_12_13`, where the conclusion and the three hypotheses are the statements of `WeilExplicitFormula.v1.theorem_12_13`,
+`ZetaGoodHeights.v1.theorem_10_13`, `ZetaGoodHeights.v1.lemma_12_2` and `ContourIntegration.v1.residue_theorem_rectangle`,
+and IEANTN's `zetaZeroesIn`, `zetaOrder`, `zetaZeroesSum` are copied too (all checked here to be verbatim, except that
+`Phi` writes `π` for `Real.pi`). Kept from `drafts/WeilExplicitFormula.lean`: the names and statements of
+`IsTestFunction`, `Phi`, E0, E2, E3, `H`, F2, `riemannXi`, C1–C3 and `rhs`. Departures: D1 is
+`rectIntegral_mul_logDeriv_eq_sum` (it takes the residue theorem as a hypothesis and sums over a `Finset` of points
+containing the zeros); G1 and the final theorem use `zetaZeroesSum`, so the drafts' `sum_zeros_eq_rectIntegral`,
+`tendsto_sum_zeros` and `tendsto_sum_riemannZeta_zeros` are not proved as written, and neither are `riemannXi_conj`
+and `zeroMult` (not needed). F3 is `IsTestFunction.tendsto_integral_Phi_mul_logDeriv`; G5 is
+`IsTestFunction.tendsto_integral_gammaFactor_half`.
+
 ## 3. Order of work
 
 See `blueprint/HANDOFF.md`, which turns this into tasks for Claude Code:
@@ -242,14 +257,17 @@ See `blueprint/HANDOFF.md`, which turns this into tasks for Claude Code:
 
 Rough size: A 600–900 lines, B 800–1200, C 1000–1500, D 200–400, E 200–300, F 300–500, G 500–800.
 
-**Division of work (27 November 2026).** A and B are done, in another chat: about 3,350 lines in branch
-`mv-lemma-12-14` (see the **L** entries in §2). Theorem 10.13 and Lemma 12.2 (C4–C7, `ZetaGoodHeights.v1`) are done
-here, through Claude Code (`HANDOFF.md`, Task 6). The other chat proposes to do E, F and G5 next, as library lemmas,
-and to leave C1–C3, D1, G1–G4 and G6 to the laptop, because the node's statement uses IEANTN's vocabulary
-(`zetaZeroesSum`) and its sandbox cannot build against IEANTN's pin. (Alternative, to be decided once E, F, G5 are
-done: those parts could also go into the library, against the Mathlib-only statements of
-`drafts/WeilExplicitFormula.lean`, taking 10.13, 12.2 and the residue theorem as hypotheses; the laptop would then
-only bridge to `zetaZeroesSum`.)
+**State (27 November 2026, afternoon).** Everything except C4–C7 is done, in another chat, in branch
+`mv-lemma-12-14` (about 6,300 lines; see the **L** entries in §2): Theorem 12.13 is proved in the library from
+Theorem 10.13, Lemma 12.2 and the residue theorem on rectangles, taken as hypotheses in their IEANTN form. Left:
+1. Theorem 10.13 and Lemma 12.2 (C4–C7, `ZetaGoodHeights.v1`; proofs in `proofs/GoodHeights.md`): in the library,
+   by the other chat (§4, decision 5);
+2. a solution for `ContourIntegration.v1` (who does it: Harald's call, with the maintainers' agreement);
+3. the equivalence of (12.20)–(12.21), as printed, with the node's form of the hypotheses, which the node's
+   docstring and metadata promise ("proved in the solution"; §4, decision 2): in the library, by the other chat
+   (§4, decision 5);
+4. the port of the library to IEANTN's pin, and the IEANTN solutions, where `theorem_12_13_of` gives
+   `WeilExplicitFormula.v1` by unfolding definitions: on the laptop, through Claude Code.
 
 ## 4. Decisions (26 November 2026)
 
@@ -264,6 +282,10 @@ only bridge to `zetaZeroesSum`.)
 4. (27 November 2026) **The digamma bound uniform on vertical strips** (B3, first statement, `exists_norm_digamma_le_log`)
    **is added to the library by the other chat**, from its `Complex.norm_digamma_sub_le`. So neither
    `ZetaGoodHeights.v1` nor `WeilExplicitFormula.v1` imports `GammaAsymptotics.v1`.
+5. (27 November 2026, afternoon) **Theorem 10.13 and Lemma 12.2, and the equivalence of (12.20)–(12.21) with the
+   node's hypotheses, are proved in the library by the other chat**, against the verbatim copies of the IEANTN
+   statements (for 10.13 and 12.2, following `proofs/GoodHeights.md`). The laptop ports the library to IEANTN's pin
+   and writes the IEANTN solutions, which then come by unfolding definitions.
 
 ## 5. IEANTN integration
 
@@ -282,13 +304,15 @@ our path — which is also what an unconditional result means.
 
 | imported conclusion | used for | status in IEANTN (23 Nov 2026) | to do |
 |---|---|---|---|
-| `ZetaZeroes.v1`: `finite_zeroes_on_compact`, `no_nontrivial_zeroes_left`, `zeroes_off_axis_in_strip` | C2, G1, G6 | proved (lean-comparator) | — |
 | `ContourIntegration.v1.residue_theorem_rectangle` | D1, G4 | inactive, none-yet | reactivate; prove |
 | `ZetaGoodHeights.v1.theorem_10_13`, `.lemma_12_2` | C4, C7, G2, G6 | new node (draft) | state; prove |
 
-`ZetaGoodHeights.v1` in turn imports `ZetaZeroes.v1.finite_zeroes_on_compact` (both conclusions) and, for
-`lemma_12_2` only, `ZetaLogDeriv.v1.logDeriv_functional_equation` (proved, lean-comparator). Its proofs are written out
-in `blueprint/proofs/GoodHeights.md`.
+`ZetaZeroes.v1` (proved) is no longer imported (27 November): Mathlib's `IsCompact.inter_riemannZetaZeros_finite`,
+present at the pin, gives the finiteness, and $\xi(1-s)=\xi(s)$ with $\zeta\ne0$ on $\Re s\ge1$ the location of the
+zeros.
+
+`ZetaGoodHeights.v1` in turn imports only `ZetaLogDeriv.v1.logDeriv_functional_equation` (proved, lean-comparator), for
+`lemma_12_2`. Its proofs are written out in `blueprint/proofs/GoodHeights.md`.
 
 `GammaAsymptotics.v1` (awaiting-solution) is no longer imported (decision 4, §4): the digamma bounds, B3 included,
 come from the library. Appendix A of `GoodHeights.md` derives `GammaAsymptotics.v1` from the Gauss series; a solution

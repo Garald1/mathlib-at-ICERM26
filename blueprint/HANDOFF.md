@@ -14,26 +14,28 @@ Read, in this order, before doing anything:
 1. `blueprint/WeilExplicitFormula.md`, all of it. §4 records Harald's decisions; §5 the IEANTN plan.
 2. In the IEANTN clone: `CLAUDE.md`, `CONTRIBUTING.md`, `docs/ARCHITECTURE.md`, `docs/NODES.md`, `docs/SOLUTIONS.md`.
 
-## Coordination (updated 27 November 2026)
+## Coordination (updated 27 November 2026, afternoon)
 
-Another chat works on the same project.
-- **Done there** (branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26`, head `3992e7d7`: five commits on top of
-  `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges cleanly into
-  `weil-explicit-formula`): Part A (the Fourier integral theorem, with the statements of `drafts/FourierIntegral.lean`
-  unchanged); Part B (Montgomery–Vaughan Theorem C.5 and Lemma 12.14, both signs); and the uniform digamma bound
-  `Complex.exists_norm_digamma_le_log`. That chat reports no `sorry` and no axioms beyond `propext`,
-  `Classical.choice`, `Quot.sound`.
-- **Proposed next there** (Harald to confirm): E, F and G5 of the blueprint, as library lemmas. It proposes to leave
-  C1–C3, D1, G1–G4 and G6 to this laptop (Task 7), since the node's statement uses IEANTN's vocabulary and its sandbox
-  cannot build against IEANTN's pin. Where those parts go will be settled once E, F, G5 are done.
+Another chat works on the same project, in branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26` (head `737b220f`:
+eight commits on top of `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges
+cleanly into `weil-explicit-formula`). That chat reports no `sorry` and no axioms beyond `propext`,
+`Classical.choice`, `Quot.sound`.
+- **Done there:** Part A (the Fourier integral theorem), Part B (Theorem C.5, Lemma 12.14, the digamma bounds), and
+  **Montgomery–Vaughan Theorem 12.13 (q = 1) from three hypotheses**:
+  `WeilExplicitFormula.theorem_12_13_of (h1013 : Theorem_10_13) (h122 : Lemma_12_2) (hres : ResidueTheoremRectangle) :
+  Theorem_12_13`, in `Mathlib/NumberTheory/WeilExplicitFormula/ExplicitFormula.lean`. The conclusion and the three
+  hypotheses are verbatim copies of the IEANTN statements `WeilExplicitFormula.v1.theorem_12_13`,
+  `ZetaGoodHeights.v1.theorem_10_13`, `ZetaGoodHeights.v1.lemma_12_2` and
+  `ContourIntegration.v1.residue_theorem_rectangle`, and IEANTN's `zetaZeroesIn`, `zetaOrder`, `zetaZeroesSum` are
+  copied verbatim into the library too (checked from claude.ai; `Phi` writes `π` for `Real.pi`).
+- **Decided by Harald (27 November):** the other chat also proves, in the library, Theorem 10.13 and Lemma 12.2
+  (following `blueprint/proofs/GoodHeights.md`) and the equivalence of Montgomery–Vaughan's printed hypotheses
+  (12.20)–(12.21) with the node's form. It also added the uniform digamma bound; neither node imports
+  `GammaAsymptotics.v1` or `ZetaZeroes.v1` any more.
 
-So Tasks 3 and 4, and step 1 of Task 2, are done there; do not start Task 7 until Harald says so. Here: Task 1
-(which now includes the other chat's new files), Task 2 from step 2 on, and Task 6. Ask Harald before starting
-Task 5.
-
-**Decided by Harald (27 November):** the digamma bound uniform on vertical strips (blueprint B3, first statement,
-`Complex.exists_norm_digamma_le_log`) is added to the library by the other chat. Neither node draft imports
-`GammaAsymptotics.v1` any more, and nobody here writes a solution for it.
+**So this laptop does:** Task 1 (the port, which now includes all of the other chat's files), Task 2 from step 2
+on, and Task 7 (the IEANTN solutions, which come by unfolding the verbatim copies). Tasks 3, 4 and 6, and step 1 of
+Task 2, are the other chat's: do not start them. Ask Harald before starting Task 5.
 
 ## Ground rules
 
@@ -89,11 +91,18 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
      `blueprint/port/additions-to-mathlib-files.patch`. The only deleted lines (two) are inside a proof in
      `Partition/Basic.lean` and need not be carried over.
 
-   Then **branch `mv-lemma-12-14`** (the other chat's; `dirichlet-jordan` plus five commits, head `3992e7d7`, so port
-   from it) **adds 5 files** (about 3,350 lines):
-   `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean` and
-   `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing,FourierIntegral}.lean`. Besides Mathlib,
-   they import only each other and the library's own files. The same branch qualifies `Set.Ioc` in
+   Then **branch `mv-lemma-12-14`** (the other chat's; `dirichlet-jordan` plus eight commits, head `737b220f`, so
+   port from it) **adds 13 files** (about 6,300 lines):
+   `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean`,
+   `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing,FourierIntegral}.lean`, and
+   `Mathlib/NumberTheory/WeilExplicitFormula/{TestFunction,TranslateSum,PrimeSum,CriticalLine,Rectangle,Xi,Contour,ExplicitFormula}.lean`.
+   Besides Mathlib, they import only each other and the library's own files. Two notes on the last eight:
+   `Contour.lean` imports `Mathlib.NumberTheory.LSeries.ZetaZeros`, which the pin has (with
+   `IsCompact.inter_riemannZetaZeros_finite`); and `Xi.lean` proves `WeilExplicitFormula.riemannZeta_conj` (for
+   s ≠ 1) because the fork's Mathlib lacks it, while the pin has `riemannZeta_conj` (all s) in
+   `NumberTheory/Harmonic/ZetaAsymp.lean`. The names don't clash (namespace); keep the library's or derive it from
+   Mathlib's, as is easier. The pin has no `deriv_`, `logDeriv_` or `analyticOrderAt_riemannZeta_conj`: keep those.
+   The same branch qualifies `Set.Ioc` in
    `Mathlib/Analysis/BoxIntegral/DivergenceTheorem.lean` and `Mathlib/MeasureTheory/Integral/DivergenceTheorem.lean`
    to fix the fork's build: **do not port that.** `Complex.hasSum_digamma` (in `DigammaSeries.lean`) is the Gauss
    series for Re s > 0, proved independently of `GammaSolution.digamma_eq_gaussSum` in IEANTN's
@@ -124,7 +133,8 @@ become its own package, pinned to IEANTN's Lean and Mathlib.
    that is for Harald to agree with the maintainers. Do not commit generated views (`STATE.md`, `GRAPH.md`,
    `docs/graph.html`, `docs/nodes/`). Push the branch to `Garald1/ieantn`; no pull request.
 3. `blueprint/drafts/WeilExplicitFormula.lean` holds statements of the intermediate lemmas about ζ (C1–C7, D1, E, F,
-   G), written against the old Mathlib fork. Keep it as a reference for the solution of Task 7; do not compile it now.
+   G), written against the old Mathlib fork. Superseded: the other chat's `NumberTheory/WeilExplicitFormula/` files
+   prove them (with the departures listed in the blueprint, §2). Do not compile it.
 4. **Stop and report** to Harald: what compiled, every statement whose meaning you changed and why, and questions.
 
 ## Task 3 — Part A: the Fourier integral theorem
@@ -152,30 +162,28 @@ Mathlib's Cauchy theorem on rectangles and its annulus invariance of circle inte
 
 ## Task 6 — a solution for `ZetaGoodHeights.v1`
 
-Blueprint C4–C7: Jensen's inequality (`AnalyticOnNhd.sum_divisor_le`) on MV's disc for Theorem 10.13; the local
-expansion of ζ'/ζ over nearby zeros from `Complex.borelCaratheodory` and `MeromorphicOn.extract_zeros_poles` (MV's
-Lemma 6.3 route); a polynomial bound for ζ in σ ≥ 1/8; the pigeonhole choice of T₁; the functional equation of ζ'/ζ
-(IEANTN `ZetaLogDeriv.v1`) for −1 ≤ σ < 1/2. **The proofs are written out step by step, with the Mathlib names
-checked at the pin, in `blueprint/proofs/GoodHeights.md`; follow it.** The most delicate part of the project.
+**The other chat's (decided by Harald, 27 November): do not start the proofs.** It proves Theorem 10.13 and
+Lemma 12.2 in the library, following `blueprint/proofs/GoodHeights.md` (§6 there says what differs on the fork),
+against the verbatim copies `WeilExplicitFormula.Theorem_10_13` and `WeilExplicitFormula.Lemma_12_2`. Here, once
+those are ported (Task 1), the IEANTN solution for `ZetaGoodHeights.v1` is obtained as in Task 7. Whether
+`lemma_12_2` keeps its import of `ZetaLogDeriv.v1.logDeriv_functional_equation` depends on whether the library
+takes that statement as a hypothesis or proves it; `GoodHeights.md` §6 describes both, and the node's `imports`
+must match.
 
-For −1 ≤ σ < 1/2, Lemma 12.2 needs the digamma bound (D) of `GoodHeights.md`: the library's
-`Complex.exists_norm_digamma_le_log` (`Gamma/DigammaSeries.lean`, ported in Task 1), with σ ∈ [1, 5/2]. Do not
-write a solution for `GammaAsymptotics.v1` (Appendix A of `GoodHeights.md` is optional, and not for now).
+## Task 7 — the IEANTN solutions for `WeilExplicitFormula.v1` and `ZetaGoodHeights.v1`
 
-**Stop and report** at the end, and also whenever an approach is abandoned.
+After Task 1 (and Task 2, so that the node drafts compile in IEANTN). The library states the IEANTN conclusions and
+their imports verbatim, with its own copies of `zetaZeroesIn`, `zetaOrder`, `zetaZeroesSum`. So each solution is the
+library theorem plus unfolding: for `WeilExplicitFormula.v1`, `WeilExplicitFormula.theorem_12_13_of` gives
+`theorem_12_13` from the challenge's hypotheses (`ContourIntegration.v1.residue_theorem_rectangle`,
+`ZetaGoodHeights.v1.theorem_10_13`, `ZetaGoodHeights.v1.lemma_12_2`); for `ZetaGoodHeights.v1`, the library's proofs
+of `Theorem_10_13` and `Lemma_12_2`. The node's `IsTestFunction`, `rhs` and `Phi` correspond to the library's
+`IsTestFunctionNode`, `rhsNode` and `Phi` (same bodies; `Phi` writes `π`). If unfolding does not close a goal by
+`Iff.rfl` or `rfl`, report it rather than proving a bridge by hand: it would mean a copy is not verbatim after all.
 
-## Task 7 — a solution for `WeilExplicitFormula.v1`
-
-**Not before Harald says so (see Coordination).** The other chat proposes that the parts of 12.13 that involve the
-zeros (C1–C3, D1, G1–G4, G6) be done here, from the library's A, B, E, F and G5. If so, note that
-`drafts/WeilExplicitFormula.lean` (and so, probably, the library's E and F) uses a structure `IsTestFunction` and
-writes `rhs` with `(2π)⁻¹ * …` where the node has a conjunction and `… / (2π)`: bridge with a one-line lemma
-each; `Phi` has the same body in both.
-
-Blueprint C1–C3, D1, E, F, G, using the library at a pinned commit and the node's imports as hypotheses. Then run
-Comparator locally (`scripts/verify-comparator.sh`, as `CONTRIBUTING.md` describes). The official verification
-workflow, any pull request, and the Palomar submission (`python scripts/ieantn.py spinoff ...`) are Harald's to
-start.
+Then run Comparator locally (`scripts/verify-comparator.sh`, as `CONTRIBUTING.md` describes). The official
+verification workflow, any pull request, and the Palomar submission (`python scripts/ieantn.py spinoff ...`) are
+Harald's to start.
 
 ## Reporting
 
@@ -188,16 +196,17 @@ go in `STATUS.md` and the commit messages.
 >
 > I would like to add `WeilExplicitFormula.v1` (kind `standard`; MV Theorem 12.13 for q = 1) and
 > `ZetaGoodHeights.v1` (kind `standard`; MV Theorem 10.13 and Lemma 12.2, which a contour argument needs to place its
-> horizontal sides). The first imports `ZetaZeroes.v1` (`finite_zeroes_on_compact`, `no_nontrivial_zeroes_left`,
-> `zeroes_off_axis_in_strip`), `ContourIntegration.v1` and `ZetaGoodHeights.v1`; it does not
-> use `ZetaHadamard.v1`, since the planned proofs go through Jensen's inequality and the Borel–Carathéodory lemma
-> rather than the Hadamard product. The second imports `ZetaZeroes.v1` (`finite_zeroes_on_compact`) and
-> `ZetaLogDeriv.v1`.
+> horizontal sides). The first imports `ContourIntegration.v1` (`residue_theorem_rectangle`) and both conclusions of
+> `ZetaGoodHeights.v1`; it does not use `ZetaHadamard.v1`, since the proofs go through Jensen's inequality and the
+> Borel–Carathéodory lemma rather than the Hadamard product, nor `ZetaZeroes.v1`, since Mathlib's
+> `IsCompact.inter_riemannZetaZeros_finite` and the functional equation of ξ suffice. The second imports
+> `ZetaLogDeriv.v1` [if the solution takes it as a hypothesis].
 >
-> This needs `ContourIntegration.v1` reactivated; I plan to supply a solution for it. The solutions would rest on a
-> pinned Riemann–Stieltjes library (a standalone package on the core's Mathlib pin), as `docs/ARCHITECTURE.md` allows;
-> the estimates for the digamma function that the proofs need (Montgomery–Vaughan Theorem C.5, Lemma 12.14, and a
-> bound uniform on vertical strips) are proved there, so neither node imports `GammaAsymptotics.v1`.
+> A proof of the first from exactly these imports already exists. This needs `ContourIntegration.v1` reactivated; I
+> plan to supply a solution for it. The solutions rest on a pinned Riemann–Stieltjes library (a standalone package on
+> the core's Mathlib pin), as `docs/ARCHITECTURE.md` allows; the estimates for the digamma function that the proofs
+> need (Montgomery–Vaughan Theorem C.5, Lemma 12.14, and a bound uniform on vertical strips) are proved there, so
+> neither node imports `GammaAsymptotics.v1`.
 >
 > One statement deviates in form from the book: MV's hypothesis (12.21), ∫ e^{(1/2+δ₀)2π|x|} |dF(x)| < ∞, cannot be
 > written in Mathlib, so (12.20) and (12.21) are stated together as "x ↦ e^{(1/2+δ₀)2π|x|} F(x) is integrable and of

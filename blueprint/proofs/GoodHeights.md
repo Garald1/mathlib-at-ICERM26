@@ -138,8 +138,9 @@ $f(1)=1$). Take $c=2+i(T+\frac12)$, $R=\frac{11}6$, $r=\frac74$.
 Hence $N[T,T+1]\le2\log\bigl(6(T+5)^2/0.35\bigr)/\log\frac{22}{21}\le C\log(T+2)$ (use $T+5\le\frac52(T+2)$ and
 $\log(T+2)\ge\log2$). $\square$
 
-In Lean the left side is `zetaZeroesSum (Set.Ioo 0 1) (Set.Icc T (T+1)) (fun _ ↦ 1)`, a finite sum by
-`ZetaZeroes.v1.finite_zeroes_on_compact`. It is at most twice the sum over the zeros with $\frac12\le\beta<1$, which
+In Lean the left side is `zetaZeroesSum (Set.Ioo 0 1) (Set.Icc T (T+1)) (fun _ ↦ 1)`, a finite sum by Mathlib's
+`IsCompact.inter_riemannZetaZeros_finite` (at the pin; the library's `WeilExplicitFormula.zetaZeroesIn_finite` and
+`zetaZeroesSum_eq_sum` already do this for the library's verbatim copy of `zetaZeroesSum`). It is at most twice the sum over the zeros with $\frac12\le\beta<1$, which
 is at most the `divisor` sum of (J); at $\rho\ne1$ the divisor of `riemannZeta₁` is `zetaOrder ρ`.
 
 ## 3. The local expansion: $\frac12\le\sigma\le2$, $|t|\ge2$
@@ -195,13 +196,31 @@ So $|\frac{\zeta'}\zeta(\sigma+iT_1)|\le C_3\log^2T+\log2\pi+O(\log T)+\frac\pi2
 
 ## 5. Imports of `ZetaGoodHeights.v1`
 
-* `theorem_10_13`: `ZetaZeroes.v1.finite_zeroes_on_compact`. (Everything else is Mathlib.)
-* `lemma_12_2`: `ZetaZeroes.v1.finite_zeroes_on_compact` (its proof goes through §2) and
-  `ZetaLogDeriv.v1.logDeriv_functional_equation`. Everything else is Mathlib or the pinned library, (D) included.
+* `theorem_10_13`: nothing (`imports: []`): Mathlib and the pinned library suffice.
+* `lemma_12_2`: `ZetaLogDeriv.v1.logDeriv_functional_equation`. Everything else is Mathlib or the pinned library, (D)
+  included. (Until 27 November both also imported `ZetaZeroes.v1.finite_zeroes_on_compact`; Mathlib's
+  `IsCompact.inter_riemannZetaZeros_finite` does the same job.)
 
 On 26 November `lemma_12_2` also imported `GammaAsymptotics.v1`, which is unproved, so `lemma_12_2` and Theorem 12.13
 would have been conditional on it. On 27 November Harald decided that the other chat adds (D) to the library instead
 (blueprint §4, decision 4), so that import is gone.
+
+## 6. Where this is done (decided by Harald, 27 November 2026)
+
+In the Riemann–Stieltjes library, by the other chat, against the verbatim copies `WeilExplicitFormula.Theorem_10_13`
+and `WeilExplicitFormula.Lemma_12_2` in `Mathlib/NumberTheory/WeilExplicitFormula/ExplicitFormula.lean` (branch
+`mv-lemma-12-14`), which are what `theorem_12_13_of` takes as hypotheses. The fork's Mathlib has every name used above
+(checked on that branch), except:
+* `riemannZeta₁`, `differentiable_riemannZeta₁`, `riemannZeta₁_one`, `riemannZeta_eq_inv_sub_mul`. Use
+  `Function.update (fun s ↦ (s - 1) * riemannZeta s) 1 1`, analytic at $1$ by `riemannZeta_residue_one` and
+  `Complex.analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt` (both on the fork);
+* Mathlib's `riemannZeta_conj` (for all $s$). Use the library's `WeilExplicitFormula.riemannZeta_conj` ($s\ne1$) and
+  its companions in `Xi.lean` (`deriv_`, `logDeriv_`, `analyticOrderAt_riemannZeta_conj`).
+
+The functional equation of $\zeta'/\zeta$ (IEANTN `ZetaLogDeriv.v1.logDeriv_functional_equation`, which `lemma_12_2`
+imports) is not on the fork. Either take its statement as a hypothesis, copied verbatim as was done for
+`ResidueTheoremRectangle`, so that the IEANTN solution of `lemma_12_2` again comes by unfolding definitions; or prove it
+from `riemannZeta_one_sub` and drop the import. Whichever is chosen, the node's `imports` must say so.
 
 ## Appendix A. `GammaAsymptotics.v1` from the Gauss representation
 

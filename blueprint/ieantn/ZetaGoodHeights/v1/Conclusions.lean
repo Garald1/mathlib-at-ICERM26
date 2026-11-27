@@ -27,7 +27,8 @@ formulas need exactly this (Weil's, in `WeilExplicitFormula.v1`; Perron-type for
 Montgomery–Vaughan count zeroes with `0 < γ ≤ T` and weight `1/2` at `γ = T`. Since the claim is
 `≪`, counting the closed interval `[T, T + 1]` instead changes only the constant (the closed count is
 at most `N(T + 2) - N(T - 1)` in their convention), so the conclusion below uses the closed interval,
-through `IEANTN.zetaZeroesSum`, whose sum is finite (`ZetaZeroes.v1.finite_zeroes_on_compact`).
+through `IEANTN.zetaZeroesSum`, whose sum is finite (Mathlib's `IsCompact.inter_riemannZetaZeros_finite`;
+also `ZetaZeroes.v1.finite_zeroes_on_compact`).
 
 ## Junk values
 

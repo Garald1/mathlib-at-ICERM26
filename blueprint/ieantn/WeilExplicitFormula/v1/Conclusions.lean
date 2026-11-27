@@ -45,7 +45,8 @@ printed form, as a Riemann–Stieltjes statement, is proved in the solution.
 ## Junk values
 
 * The sum over zeroes is `IEANTN.zetaZeroesSum` over the critical strip and `|Im ρ| ≤ T`, a `tsum`
-  of a family with finite support (finitely many zeroes in a compact set: `ZetaZeroes.v1`). It is an
+  of a family with finite support (finitely many zeroes in a compact set: Mathlib's
+  `IsCompact.inter_riemannZetaZeros_finite`). It is an
   honest finite sum, and the theorem is about the limit of these finite sums; no summability over
   all zeroes is claimed (none holds in general: `Φ(ρ)` is only `O(1/|γ|)`).
 * `Phi F ρ` is a Bochner integral. Under the hypotheses the integrand is integrable for
