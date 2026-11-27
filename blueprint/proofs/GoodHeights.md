@@ -5,6 +5,11 @@ Detailed proofs for the node `ZetaGoodHeights.v1` (drafts in `blueprint/ieantn/Z
 Theory I*. Every Mathlib name below was checked at IEANTN's Mathlib pin (`71a80585`); every IEANTN name in
 IEANTN at commit `cd9c2dd` (23 November 2026).
 
+**Done (27 November 2026).** Proved in the library by the other chat (branch `mv-lemma-12-14`,
+`NumberTheory/WeilExplicitFormula/`: `ZetaBounds`, `ZeroCount`, `ZetaLogDeriv`, `Landau`, `GoodHeights`, `Main`):
+`WeilExplicitFormula.theorem_10_13 : Theorem_10_13` and `WeilExplicitFormula.lemma_12_2 : Lemma_12_2`, the
+statements of the node verbatim.
+
 **What [MV] do.** Theorem 10.13: Jensen's inequality applied to $\xi(s)$ on the disc with centre $2+i(T+\frac12)$,
 $R=\frac{11}6$, $r=\frac74$, with the estimates of their Corollary 1.17, plus the symmetry of the zeros.
 Lemma 12.2: from Lemma 12.1, $\frac{\zeta'}\zeta(s)=\frac{-1}{s-1}+\sum_{|\gamma-t|\le1}\frac1{s-\rho}+O(\log\tau)$

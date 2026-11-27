@@ -259,17 +259,15 @@ See `blueprint/HANDOFF.md`, which turns this into tasks for Claude Code:
 
 Rough size: A 600–900 lines, B 800–1200, C 1000–1500, D 200–400, E 200–300, F 300–500, G 500–800.
 
-**State (27 November 2026, afternoon).** Everything except C4–C7 is done, in another chat, in branch
-`mv-lemma-12-14` (about 6,300 lines; see the **L** entries in §2): Theorem 12.13 is proved in the library from
-Theorem 10.13, Lemma 12.2 and the residue theorem on rectangles, taken as hypotheses in their IEANTN form. Left:
-1. Theorem 10.13 and Lemma 12.2 (C4–C7, `ZetaGoodHeights.v1`; proofs in `proofs/GoodHeights.md`): in the library,
-   by the other chat (§4, decision 5);
-2. a solution for `ContourIntegration.v1` (who does it: Harald's call, with the maintainers' agreement);
-3. the equivalence of (12.20)–(12.21), as printed, with the node's form of the hypotheses, which the node's
-   docstring and metadata promise ("proved in the solution"; §4, decision 2): in the library, by the other chat
-   (§4, decision 5);
-4. the port of the library to IEANTN's pin, and the IEANTN solutions, where `theorem_12_13_of` gives
-   `WeilExplicitFormula.v1` by unfolding definitions: on the laptop, through Claude Code.
+**State (27 November 2026, evening).** All of the mathematics is done, in another chat, on the fork's Mathlib
+(branch `mv-lemma-12-14`, head `e62f9988`; about 9,700 lines; see the **L** entries in §2):
+`WeilExplicitFormula.theorem_10_13`, `WeilExplicitFormula.lemma_12_2`, `ResidueRectangle.residue_theorem_rectangle`
+(Mathlib-only) and `theorem_12_13_of_residueTheorem` together give `Theorem_12_13`, the node's statement, with no
+hypotheses; `isTestFunctionNode_iff` proves the equivalence of (12.20)–(12.21), as printed, with the node's
+hypotheses. Left, all on the laptop through Claude Code: the port of the two packages to IEANTN's pin, the
+reactivation of `ContourIntegration.v1`, and the three IEANTN solutions (`ContourIntegration.v1` from
+`ResidueRectangle.lean`; `ZetaGoodHeights.v1` and `WeilExplicitFormula.v1` by unfolding); then the pull requests,
+verification and the Palomar spin-off, which are Harald's to start.
 
 ## 4. Decisions (26 November 2026)
 

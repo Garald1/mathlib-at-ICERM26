@@ -14,31 +14,34 @@ Read, in this order, before doing anything:
 1. `blueprint/WeilExplicitFormula.md`, all of it. §4 records Harald's decisions; §5 the IEANTN plan.
 2. In the IEANTN clone: `CLAUDE.md`, `CONTRIBUTING.md`, `docs/ARCHITECTURE.md`, `docs/NODES.md`, `docs/SOLUTIONS.md`.
 
-## Coordination (updated 27 November 2026, afternoon)
+## Coordination (updated 27 November 2026, evening)
 
-Another chat works on the same project, in branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26` (head `63186f0e`:
-nine commits on top of `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges
+Another chat works on the same project, in branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26` (head `e62f9988`:
+thirteen commits on top of `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges
 cleanly into `weil-explicit-formula`). That chat reports no `sorry` and no axioms beyond `propext`,
 `Classical.choice`, `Quot.sound`.
-- **Done there:** Part A (the Fourier integral theorem), Part B (Theorem C.5, Lemma 12.14, the digamma bounds), and
-  **Montgomery–Vaughan Theorem 12.13 (q = 1) from three hypotheses**:
-  `WeilExplicitFormula.theorem_12_13_of (h1013 : Theorem_10_13) (h122 : Lemma_12_2) (hres : ResidueTheoremRectangle) :
-  Theorem_12_13`, in `Mathlib/NumberTheory/WeilExplicitFormula/ExplicitFormula.lean`. The conclusion and the three
-  hypotheses are verbatim copies of the IEANTN statements `WeilExplicitFormula.v1.theorem_12_13`,
-  `ZetaGoodHeights.v1.theorem_10_13`, `ZetaGoodHeights.v1.lemma_12_2` and
-  `ContourIntegration.v1.residue_theorem_rectangle`, and IEANTN's `zetaZeroesIn`, `zetaOrder`, `zetaZeroesSum` are
-  copied verbatim into the library too (checked from claude.ai; `Phi` writes `π` for `Real.pi`). Since `63186f0e`
-  the drafts' finsum statements of D1 and 12.13 are proved too, with those hypotheses added
-  (`rectIntegral_mul_logDeriv_of`, `IsTestFunction.tendsto_sum_zeros_of`,
-  `IsTestFunction.tendsto_sum_riemannZeta_zeros_of`).
-- **Decided by Harald (27 November):** the other chat also proves, in the library, Theorem 10.13 and Lemma 12.2
-  (following `blueprint/proofs/GoodHeights.md`) and the equivalence of Montgomery–Vaughan's printed hypotheses
-  (12.20)–(12.21) with the node's form. It also added the uniform digamma bound; neither node imports
-  `GammaAsymptotics.v1` or `ZetaZeroes.v1` any more.
 
-**So this laptop does:** Task 1 (the port, which now includes all of the other chat's files), Task 2 from step 2
-on, and Task 7 (the IEANTN solutions, which come by unfolding the verbatim copies). Tasks 3, 4 and 6, and step 1 of
-Task 2, are the other chat's: do not start them. Ask Harald before starting Task 5.
+**All the mathematics is done there**, on the fork's Mathlib:
+- Part A (the Fourier integral theorem), Part B (Theorem C.5, Lemma 12.14, the digamma bounds);
+- **Theorem 12.13 (q = 1) from three hypotheses**: `WeilExplicitFormula.theorem_12_13_of (h1013 : Theorem_10_13)
+  (h122 : Lemma_12_2) (hres : ResidueTheoremRectangle) : Theorem_12_13` (`NumberTheory/WeilExplicitFormula/ExplicitFormula.lean`);
+- **Theorem 10.13 and Lemma 12.2**: `WeilExplicitFormula.theorem_10_13 : Theorem_10_13` and
+  `WeilExplicitFormula.lemma_12_2 : Lemma_12_2` (`Main.lean`; proofs in `ZetaBounds`, `ZeroCount`, `ZetaLogDeriv`,
+  `Landau`, `GoodHeights`), and `theorem_12_13_of_residueTheorem (hres) : Theorem_12_13`;
+- **the residue theorem on rectangles**: `ResidueRectangle.residue_theorem_rectangle`, in
+  `Mathlib/Analysis/Complex/ResidueRectangle.lean`, which imports only Mathlib;
+- **the equivalence of MV's printed hypotheses (12.20)–(12.21) with the node's form**: `isTestFunctionNode_iff`
+  (`Hypotheses.lean`; (12.21) as a Riemann–Stieltjes integral against the variation of F).
+
+Checked from claude.ai, textually: `Theorem_12_13`, `Theorem_10_13`, `Lemma_12_2`, `ResidueTheoremRectangle`,
+`LogDerivFunctionalEquation`, the residue theorem's statement, and the copies of `zetaZeroesIn`, `zetaOrder`,
+`zetaZeroesSum` are verbatim copies of the IEANTN statements (`Phi` writes `π` for `Real.pi`). Nothing has been
+compiled at IEANTN's pin yet: that is this laptop's job.
+
+**So this laptop does:** Task 5 (the reactivation pull request, then the solution of `ContourIntegration.v1` from
+`ResidueRectangle.lean`), Task 1 (the port), Task 2 from step 2 on, and Task 7 (the solutions of
+`ZetaGoodHeights.v1` and `WeilExplicitFormula.v1`, by unfolding). Tasks 3, 4 and 6, and step 1 of Task 2, are done
+there: do not redo them.
 
 ## Ground rules
 
@@ -101,11 +104,12 @@ for the explicit formula, goes into a second package that requires the first.
      `blueprint/port/additions-to-mathlib-files.patch`. The only deleted lines (two) are inside a proof in
      `Partition/Basic.lean` and need not be carried over.
 
-   **Into `WeilExplicitFormula`:** branch `mv-lemma-12-14` (the other chat's; `dirichlet-jordan` plus nine commits, head `63186f0e`, so
-   port from it) **adds 13 files** (about 6,300 lines):
+   **Into `WeilExplicitFormula`:** branch `mv-lemma-12-14` (the other chat's; `dirichlet-jordan` plus thirteen commits,
+   head `e62f9988`, so port from it) **adds 20 files** (about 8,850 lines):
    `Mathlib/Analysis/SpecialFunctions/Gamma/{DigammaSeries,DigammaFourier}.lean`,
    `Mathlib/Analysis/BoxIntegral/Stieltjes/{VariationBounds,DigammaPairing,FourierIntegral}.lean`, and
-   `Mathlib/NumberTheory/WeilExplicitFormula/{TestFunction,TranslateSum,PrimeSum,CriticalLine,Rectangle,Xi,Contour,ExplicitFormula}.lean`.
+   `Mathlib/NumberTheory/WeilExplicitFormula/{TestFunction,TranslateSum,PrimeSum,CriticalLine,Rectangle,Xi,Contour,ExplicitFormula,ZetaBounds,ZeroCount,ZetaLogDeriv,Landau,GoodHeights,Hypotheses,Main}.lean`.
+   Its 21st new file, `Mathlib/Analysis/Complex/ResidueRectangle.lean`, goes into IEANTN instead (Task 5).
    Besides Mathlib, they import only each other and the library's own files. Two notes on the last eight:
    `Contour.lean` imports `Mathlib.NumberTheory.LSeries.ZetaZeros`, which the pin has (with
    `IsCompact.inter_riemannZetaZeros_finite`); and `Xi.lean` proves `WeilExplicitFormula.riemannZeta_conj` (for
@@ -200,19 +204,39 @@ Description:
 Base the Task 2 branch (the node drafts) on this branch until it is merged: `WeilExplicitFormula.v1` imports this node,
 and `check-graph` fails an edge onto an inactive node.
 
-**Solution (later).** The other chat proves `ResidueTheoremRectangle` in the library (its verbatim copy of the
-node's statement), after 10.13, 12.2 and the (12.20)–(12.21) equivalence. That is the only proof; the IEANTN
-solution for this node then comes by unfolding, as in Task 7. Do not write another one.
+**Solution.** The proof is `Mathlib/Analysis/Complex/ResidueRectangle.lean` on `mv-lemma-12-14` (commit `e62f9988`;
+Mathlib-only, five imports; its theorem `ResidueRectangle.residue_theorem_rectangle` states the node's conclusion
+verbatim). It goes into IEANTN as this node's solution, and nowhere else (not into either package):
+1. Copy it to `Solutions/ContourIntegration.v1/ResidueRectangle.lean`. Delete the lines `module` and
+   `@[expose] public section`, and change `public import` to `import` (compare `Solutions/CH2.v3/ResiduePort.lean`).
+   Keep its header.
+2. Add `Solution.lean`, importing `ResidueRectangle` and `IEANTN.Nodes.ContourIntegration.v1.Conclusions`, with
+   ```lean
+   theorem ContourIntegration.v1.challenge_residue_theorem_rectangle :
+       ContourIntegration.v1.residue_theorem_rectangle :=
+     ResidueRectangle.residue_theorem_rectangle
+   ```
+   (the name and statement of the theorem in the node's `Challenge.lean`; do not import the `Challenge`).
+3. Add `lakefile.toml` (package `solution_ContourIntegration_v1`, `require IEANTN` with `path = "../.."`, one
+   `lean_lib` per root), `lean-toolchain` (IEANTN's) and `comparator.json` (`challenge_module`
+   `IEANTN.Nodes.ContourIntegration.v1.Challenge`, `solution_module` `Solution`, `theorem_names`
+   `["ContourIntegration.v1.challenge_residue_theorem_rectangle"]`, the three permitted axioms, `enable_nanoda`),
+   all as in `Solutions/CH2.v3/`.
+4. Build it at IEANTN's pin. The other chat could not: it only checked that the five imported modules and every
+   Mathlib name the file uses exist at `71a80585` and are not deprecated. If something fails, make the smallest change
+   that works and record it in `PORTING.md`.
+5. Run Comparator locally (`scripts/verify-comparator.sh`). Commit on a branch of `Garald1/IEANTN` based on the
+   reactivation branch. The pull request for the solution is Harald's to start, after the reactivation is merged.
 
 ## Task 6 — a solution for `ZetaGoodHeights.v1`
 
-**The other chat's (decided by Harald, 27 November): do not start the proofs.** It proves Theorem 10.13 and
-Lemma 12.2 in the library, following `blueprint/proofs/GoodHeights.md` (§6 there says what differs on the fork),
-against the verbatim copies `WeilExplicitFormula.Theorem_10_13` and `WeilExplicitFormula.Lemma_12_2`. Here, once
-those are ported (Task 1), the IEANTN solution for `ZetaGoodHeights.v1` is obtained as in Task 7. Whether
-`lemma_12_2` keeps its import of `ZetaLogDeriv.v1.logDeriv_functional_equation` depends on whether the library
-takes that statement as a hypothesis or proves it; `GoodHeights.md` §6 describes both, and the node's `imports`
-must match.
+**Done in the other chat**: `WeilExplicitFormula.theorem_10_13 : Theorem_10_13` and
+`WeilExplicitFormula.lemma_12_2 : Lemma_12_2`. Its proof of Lemma 12.2 proves the functional equation of ζ'/ζ
+itself (`ZetaLogDeriv.lean`, as `LogDerivFunctionalEquation`, a verbatim copy of
+`ZetaLogDeriv.v1.logDeriv_functional_equation`). The node keeps importing `ZetaLogDeriv.v1` (decision 3 of the
+blueprint: import the nodes already there), so the solution should use the imported statement, through a library
+theorem `lemma_12_2_of (hFE : LogDerivFunctionalEquation) : Lemma_12_2`, which the other chat has been asked to add.
+If it is not there when you get to Task 7, ask Harald. The IEANTN solution itself is part of Task 7.
 
 ## Task 7 — the IEANTN solutions for `WeilExplicitFormula.v1` and `ZetaGoodHeights.v1`
 
@@ -221,7 +245,7 @@ their imports verbatim, with its own copies of `zetaZeroesIn`, `zetaOrder`, `zet
 library theorem plus unfolding: for `WeilExplicitFormula.v1`, `WeilExplicitFormula.theorem_12_13_of` gives
 `theorem_12_13` from the challenge's hypotheses (`ContourIntegration.v1.residue_theorem_rectangle`,
 `ZetaGoodHeights.v1.theorem_10_13`, `ZetaGoodHeights.v1.lemma_12_2`); for `ZetaGoodHeights.v1`, the library's proofs
-of `Theorem_10_13` and `Lemma_12_2`. The node's `IsTestFunction`, `rhs` and `Phi` correspond to the library's
+of `Theorem_10_13` (`theorem_10_13`) and `Lemma_12_2` (`lemma_12_2_of` applied to the challenge's hypothesis). The node's `IsTestFunction`, `rhs` and `Phi` correspond to the library's
 `IsTestFunctionNode`, `rhsNode` and `Phi` (same bodies; `Phi` writes `π`). If unfolding does not close a goal by
 `Iff.rfl` or `rfl`, report it rather than proving a bridge by hand: it would mean a copy is not verbatim after all.
 
