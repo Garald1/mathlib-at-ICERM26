@@ -156,12 +156,43 @@ Fejér's theorem for Fourier integrals, Hardy's Tauberian theorem for integrals 
 and `Complex.exists_norm_digamma_sub_le`.
 B4 was proved without residues, so it does not need Task 5. Nothing to do here beyond porting (Task 1).
 
-## Task 5 — a solution for `ContourIntegration.v1`
+## Task 5 — `ContourIntegration.v1`: reactivation now, solution later
 
-Needed for D1 and G4 of the proof of 12.13 (not for B4). Only after Harald has agreed its reactivation with the
-maintainers, and has said whether the other chat, which does 12.13, will do this too. Port PNT+'s rectangle and residue lemmas
-(`ResidueCalcOnRectangles.lean` in `AlexKontorovich/PrimeNumberTheoremAnd`) with credit, or prove directly from
-Mathlib's Cauchy theorem on rectangles and its annulus invariance of circle integrals.
+**Reactivation (decided by Harald, 27 November).** Branch `reactivate-contour-integration` of `Garald1/IEANTN`
+(commit `906a4d0`, on `main` at `e25e4f8`) runs `python scripts/ieantn.py reactivate ContourIntegration.v1`: the
+node's status goes back to `awaiting-solution` and it rejoins the umbrella `IEANTN/Nodes.lean`; `check-graph` and
+`check-closure` pass. What is missing is the node's `fingerprints.json`, which needs a Lean build. To finish:
+1. Check out that branch in `ieantn/`. Its one commit's author line reads `Harald Andres Helfgott
+   <noreply@anthropic.com>` (a slip): amend it to Harald's own identity
+   (`git commit --amend --reset-author --no-edit`).
+2. `lake exe cache get`, `lake build`, then `python scripts/ieantn.py fingerprint`. It should create
+   `IEANTN/Nodes/ContourIntegration/v1/fingerprints.json` and change nothing else; if it changes anything else, stop
+   and report. Then `python scripts/ieantn.py check`.
+3. Add the fingerprints to the same commit (`git commit --amend --no-edit`), force-push this branch (it is new and
+   nobody else uses it), and open the pull request to `teorth/IEANTN` with the title and description below (Harald
+   has approved this one pull request). Do not commit `STATE.md`, `GRAPH.md`, `docs/graph.html` or `docs/nodes/`.
+
+Title: `Reactivate ContourIntegration.v1 (residue theorem on a rectangle)`
+
+Description:
+
+> Reactivates `ContourIntegration.v1` with `python scripts/ieantn.py reactivate ContourIntegration.v1`: its status
+> returns to `awaiting-solution`, it rejoins the umbrella, and its fingerprint is regenerated. The statement is
+> unchanged.
+>
+> Its recorded reason for deactivation said this would be "the first thing to reactivate if a future node needs
+> contour integration". The future node is coming: `WeilExplicitFormula.v1`, Montgomery–Vaughan Theorem 12.13
+> (Weil's explicit formula) for q = 1, will import `residue_theorem_rectangle`, together with Montgomery–Vaughan
+> Theorem 10.13 and Lemma 12.2 in a second new node, `ZetaGoodHeights.v1`. A Lean proof of Theorem 12.13 from exactly
+> these three statements, copied verbatim, already exists in a Riemann–Stieltjes library that the solutions will pin.
+> The two nodes, and a solution for this one, will follow in separate pull requests.
+
+Base the Task 2 branch (the node drafts) on this branch until it is merged: `WeilExplicitFormula.v1` imports this node,
+and `check-graph` fails an edge onto an inactive node.
+
+**Solution (later).** The other chat proves `ResidueTheoremRectangle` in the library (its verbatim copy of the
+node's statement), after 10.13, 12.2 and the (12.20)–(12.21) equivalence. That is the only proof; the IEANTN
+solution for this node then comes by unfolding, as in Task 7. Do not write another one.
 
 ## Task 6 — a solution for `ZetaGoodHeights.v1`
 

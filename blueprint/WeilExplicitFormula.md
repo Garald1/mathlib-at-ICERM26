@@ -288,6 +288,11 @@ Theorem 10.13, Lemma 12.2 and the residue theorem on rectangles, taken as hypoth
    node's hypotheses, are proved in the library by the other chat**, against the verbatim copies of the IEANTN
    statements (for 10.13 and 12.2, following `proofs/GoodHeights.md`). The laptop ports the library to IEANTN's pin
    and writes the IEANTN solutions, which then come by unfolding definitions.
+6. (27 November 2026, afternoon) **`ContourIntegration.v1` is reactivated now** (its own recorded reason anticipates
+   it: "the first thing to reactivate if a future node needs contour integration"), and **its proof is written once**,
+   in the library by the other chat, as `ResidueTheoremRectangle`; the IEANTN solution unfolds to it. This is what
+   IEANTN's `standard` kind is for: "textbook mathematics that Mathlib happens not to have, stated once so several
+   nodes can import it instead of each carrying its own copy" (`docs/NODES.md`).
 
 ## 5. IEANTN integration
 
@@ -306,7 +311,7 @@ our path — which is also what an unconditional result means.
 
 | imported conclusion | used for | status in IEANTN (23 Nov 2026) | to do |
 |---|---|---|---|
-| `ContourIntegration.v1.residue_theorem_rectangle` | D1, G4 | inactive, none-yet | reactivate; prove |
+| `ContourIntegration.v1.residue_theorem_rectangle` | D1, G4 | reactivation on a branch of `Garald1/IEANTN`, pull request pending; none-yet | prove (other chat, in the library) |
 | `ZetaGoodHeights.v1.theorem_10_13`, `.lemma_12_2` | C4, C7, G2, G6 | new node (draft) | state; prove |
 
 `ZetaZeroes.v1` (proved) is no longer imported (27 November): Mathlib's `IsCompact.inter_riemannZetaZeros_finite`,
