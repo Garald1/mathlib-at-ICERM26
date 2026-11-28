@@ -34,6 +34,11 @@ The proof follows `blueprint/proofs/GoodHeights.md`, §§3–4, without the Hada
   `1/2 < σ ≤ 2` at `1 - s̄ = (1 - σ) + iT₁`, `ψ(s) = ψ(s + 2) - 1/s - 1/(s + 1)` with the library's
   `Complex.exists_norm_digamma_le_log` on `1 ≤ Re ≤ 5/2`, and `|tan(πs/2)| ≤ 2`.
 
+`exists_good_height_margin_of` (and `exists_good_height_margin`, from `ZetaLogDeriv.lean`) is the
+same statement with the margin that the choice of `T₁` provides: `|T₁ - γ| ≥ c / log T` for every
+non-trivial zero `ρ = β + iγ`. `PartialFractions.lean` uses it; `exists_good_height_of` is
+unchanged.
+
 ## AI usage
 
 This file was written by Claude (Anthropic) in November 2026. It compiles, but has not been
@@ -648,5 +653,142 @@ theorem exists_good_height : ∃ C : ℝ, ∀ T : ℝ, 2 ≤ T → ∃ T₁ ∈ 
         ‖deriv riemannZeta (σ + T₁ * Complex.I) / riemannZeta (σ + T₁ * Complex.I)‖ ≤
           C * Real.log T ^ 2 :=
   exists_good_height_of logDeriv_functional_equation
+
+/-- **Good heights with a margin.** Montgomery–Vaughan's choice of `T₁` in their proof of
+Lemma 12.2 keeps `T₁` at distance at least `c / log T` from the ordinate of every non-trivial zero:
+it is at distance at least `1/(2(N + 1))`, with `N ≪ log T`, from the ordinates in
+`[T - 2, T + 3]`, and at distance at least `2` from the others. This is `exists_good_height_of`
+with that margin added (and with `C > 0`); the functional equation of `ζ'/ζ` is a hypothesis, as
+there. -/
+theorem exists_good_height_margin_of (hFE : LogDerivFunctionalEquation) :
+    ∃ C c : ℝ, 0 < C ∧ 0 < c ∧ ∀ T : ℝ, 2 ≤ T → ∃ T₁ ∈ Set.Icc T (T + 1),
+      (∀ ρ ∈ zetaZeroesIn (Set.Ioo 0 1) Set.univ, c / Real.log T ≤ |T₁ - ρ.im|) ∧
+      ∀ σ ∈ Set.Icc (-1 : ℝ) 2,
+        riemannZeta (σ + T₁ * Complex.I) ≠ 0 ∧
+          ‖deriv riemannZeta (σ + T₁ * Complex.I) / riemannZeta (σ + T₁ * Complex.I)‖ ≤
+            C * Real.log T ^ 2 := by
+  obtain ⟨CD, hCD⟩ := Complex.exists_norm_digamma_le_log (σ₁ := 1) (σ₂ := 5 / 2) one_pos
+  have hK₀0 : (0 : ℝ) ≤ 20 / Real.log (22 / 21) :=
+    div_nonneg (by norm_num) (Real.log_pos (by norm_num)).le
+  have hlog2 : 0 < Real.log 2 := Real.log_pos one_lt_two
+  have hpi0 := Real.pi_pos
+  have hΛ0 := landauConst_nonneg
+  refine ⟨450 * (20 / Real.log (22 / 21)) ^ 2 +
+    (30 * (20 / Real.log (22 / 21)) + 9 * landauConst + 3 * |CD|) / Real.log 2 +
+    (landauConst + Real.log (2 * π) + 1 + π) / Real.log 2 ^ 2,
+    1 / (30 * (20 / Real.log (22 / 21)) + 2 / Real.log 2), ?_, by positivity, fun T hT ↦ ?_⟩
+  · have hlog2π : 0 ≤ Real.log (2 * π) := Real.log_nonneg (by nlinarith [Real.pi_gt_three])
+    have h1 : 0 ≤ 450 * (20 / Real.log (22 / 21)) ^ 2 := by positivity
+    have h2 : 0 ≤ (30 * (20 / Real.log (22 / 21)) + 9 * landauConst + 3 * |CD|) / Real.log 2 :=
+      div_nonneg (by positivity) hlog2.le
+    have h3 : 0 < (landauConst + Real.log (2 * π) + 1 + π) / Real.log 2 ^ 2 :=
+      div_pos (by linarith) (by positivity)
+    linarith
+  -- the zeros near `[T, T + 1]`
+  have hZ : (zetaZeroesIn (Ioo 0 1) (Icc (T - 2) (T + 3))).Finite :=
+    zetaZeroesIn_finite Ioo_subset_Icc_self subset_rfl
+  have hZf : ∀ ρ, ρ ∈ hZ.toFinset ↔ ρ ∈ zetaZeroesIn (Ioo 0 1) (Icc (T - 2) (T + 3)) :=
+    fun ρ ↦ hZ.mem_toFinset
+  have hnZ := sum_zetaOrder_le_of_window hT hZf
+  have hN : (hZ.toFinset.card : ℝ) ≤ ∑ ρ ∈ hZ.toFinset, (zetaOrder ρ : ℝ) := by
+    rw [Finset.card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
+    exact Finset.sum_le_sum fun ρ hρ ↦ by
+      obtain ⟨⟨h0, h1⟩, -, hz⟩ := (hZf ρ).1 hρ
+      exact one_le_zetaOrder h0 h1 hz
+  -- the height `T₁`
+  obtain ⟨T₁, hT₁, hfar⟩ := exists_far_point (hZ.toFinset.image Complex.im) T
+  have hη0 : (0 : ℝ) < 1 / (2 * ((hZ.toFinset.card : ℝ) + 1)) := by positivity
+  have hsep : ∀ ρ ∈ hZ.toFinset, 1 / (2 * ((hZ.toFinset.card : ℝ) + 1)) ≤ |T₁ - ρ.im| := by
+    intro ρ hρ
+    refine le_trans ?_ (hfar _ (Finset.mem_image_of_mem _ hρ))
+    have hcard : ((hZ.toFinset.image Complex.im).card : ℝ) ≤ hZ.toFinset.card := by
+      exact_mod_cast Finset.card_image_le
+    gcongr
+  -- the margin
+  have hlogT : Real.log 2 ≤ Real.log T := Real.log_le_log two_pos hT
+  have hlogT0 : 0 < Real.log T := hlog2.trans_le hlogT
+  have hmargin : ∀ ρ ∈ zetaZeroesIn (Set.Ioo 0 1) Set.univ,
+      1 / (30 * (20 / Real.log (22 / 21)) + 2 / Real.log 2) / Real.log T ≤ |T₁ - ρ.im| := by
+    intro ρ hρ
+    obtain ⟨hre, -, hz⟩ := hρ
+    by_cases hw : ρ.im ∈ Icc (T - 2) (T + 3)
+    · refine le_trans ?_ (hsep ρ ((hZf ρ).2 ⟨hre, hw, hz⟩))
+      have hlogT4 : Real.log (T + 4) ≤ 3 * Real.log T := by
+        have h3 : Real.log (T ^ 3) = 3 * Real.log T := by
+          rw [Real.log_pow]
+          norm_num
+        rw [← h3]
+        have h4 : 4 ≤ T ^ 2 := by nlinarith
+        have h5 : T * 4 ≤ T * T ^ 2 := mul_le_mul_of_nonneg_left h4 (by linarith)
+        exact Real.log_le_log (by linarith) (by nlinarith)
+      have hNle : (hZ.toFinset.card : ℝ) ≤ 15 * (20 / Real.log (22 / 21)) * Real.log T := by
+        calc (hZ.toFinset.card : ℝ)
+            ≤ 5 * (20 / Real.log (22 / 21) * Real.log (T + 4)) := hN.trans hnZ
+          _ ≤ 5 * (20 / Real.log (22 / 21) * (3 * Real.log T)) := by gcongr
+          _ = 15 * (20 / Real.log (22 / 21)) * Real.log T := by ring
+      have h2 : 2 ≤ 2 * Real.log T / Real.log 2 := by
+        rw [le_div_iff₀ hlog2]
+        linarith
+      rw [div_div, one_div_le_one_div (by positivity) (by positivity)]
+      calc 2 * ((hZ.toFinset.card : ℝ) + 1)
+          ≤ 2 * (15 * (20 / Real.log (22 / 21)) * Real.log T) + 2 * Real.log T / Real.log 2 := by
+            linarith
+        _ = (30 * (20 / Real.log (22 / 21)) + 2 / Real.log 2) * Real.log T := by ring
+    · have hfar2 : 2 ≤ |T₁ - ρ.im| := by
+        simp only [mem_Icc, not_and_or, not_le] at hw
+        rcases hw with h | h
+        · rw [abs_of_pos (by linarith [hT₁.1])]
+          linarith [hT₁.1]
+        · rw [abs_of_neg (by linarith [hT₁.2])]
+          linarith [hT₁.2]
+      refine le_trans ?_ hfar2
+      have hc : 1 / (30 * (20 / Real.log (22 / 21)) + 2 / Real.log 2) ≤ Real.log 2 / 2 := by
+        calc 1 / (30 * (20 / Real.log (22 / 21)) + 2 / Real.log 2) ≤ 1 / (2 / Real.log 2) :=
+              one_div_le_one_div_of_le (div_pos two_pos hlog2)
+                (le_add_of_nonneg_left (mul_nonneg (by norm_num : (0 : ℝ) ≤ 30) hK₀0))
+          _ = Real.log 2 / 2 := one_div_div 2 (Real.log 2)
+      rw [div_le_iff₀ hlogT0]
+      nlinarith
+  refine ⟨T₁, hT₁, hmargin, fun σ hσ ↦ ?_⟩
+  have hz := riemannZeta_ne_zero_of_far hT₁ hT hη0 hZf hsep σ
+  refine ⟨hz, ?_⟩
+  rw [← logDeriv_apply]
+  have hT₁2 : 2 ≤ T₁ := by linarith [hT₁.1]
+  have hright : ∀ σ' ∈ Icc (1 / 2 : ℝ) 2, ‖logDeriv riemannZeta (σ' + T₁ * I)‖ ≤
+      (∑ ρ ∈ hZ.toFinset, (zetaOrder ρ : ℝ)) / (1 / (2 * ((hZ.toFinset.card : ℝ) + 1))) +
+        landauConst * (1 + Real.log (48 * (T + 5))) :=
+    fun σ' hσ' ↦ norm_logDeriv_riemannZeta_le_right hT₁ hT hη0 hZf hsep hσ'
+  have hηeq : (∑ ρ ∈ hZ.toFinset, (zetaOrder ρ : ℝ)) / (1 / (2 * ((hZ.toFinset.card : ℝ) + 1))) =
+      2 * (∑ ρ ∈ hZ.toFinset, (zetaOrder ρ : ℝ)) * ((hZ.toFinset.card : ℝ) + 1) := by
+    field_simp
+  refine good_height_arith hT hK₀0 landauConst_nonneg hnZ hN (Nat.cast_nonneg _) ?_
+  rw [← hηeq]
+  have hpi := Real.pi_pos
+  have hlog2π : 0 ≤ Real.log (2 * π) := Real.log_nonneg (by nlinarith [Real.pi_gt_three])
+  rcases lt_or_ge σ (1 / 2) with hσ' | hσ'
+  · have h := norm_logDeriv_riemannZeta_le_left hFE hT₁2 hσ' hσ.1 hz
+      (hright (1 - σ) ⟨by linarith, by linarith [hσ.1]⟩) hCD
+    have hlog : CD * Real.log (T₁ + 2) ≤ |CD| * Real.log (T + 3) := by
+      calc CD * Real.log (T₁ + 2) ≤ |CD| * Real.log (T₁ + 2) :=
+            mul_le_mul_of_nonneg_right (le_abs_self _) (Real.log_nonneg (by linarith))
+        _ ≤ |CD| * Real.log (T + 3) :=
+            mul_le_mul_of_nonneg_left (Real.log_le_log (by linarith) (by linarith [hT₁.2]))
+              (abs_nonneg _)
+    linarith
+  · have h := hright σ ⟨hσ', hσ.2⟩
+    have : 0 ≤ |CD| * Real.log (T + 3) :=
+      mul_nonneg (abs_nonneg _) (Real.log_nonneg (by linarith))
+    linarith
+
+/-- Good heights with a margin, with the functional equation of `ζ'/ζ` from
+`ZetaLogDeriv.lean`. -/
+theorem exists_good_height_margin :
+    ∃ C c : ℝ, 0 < C ∧ 0 < c ∧ ∀ T : ℝ, 2 ≤ T → ∃ T₁ ∈ Set.Icc T (T + 1),
+      (∀ ρ ∈ zetaZeroesIn (Set.Ioo 0 1) Set.univ, c / Real.log T ≤ |T₁ - ρ.im|) ∧
+      ∀ σ ∈ Set.Icc (-1 : ℝ) 2,
+        riemannZeta (σ + T₁ * Complex.I) ≠ 0 ∧
+          ‖deriv riemannZeta (σ + T₁ * Complex.I) / riemannZeta (σ + T₁ * Complex.I)‖ ≤
+            C * Real.log T ^ 2 :=
+  exists_good_height_margin_of logDeriv_functional_equation
 
 end WeilExplicitFormula
