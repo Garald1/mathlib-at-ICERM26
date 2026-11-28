@@ -14,7 +14,13 @@ Read, in this order, before doing anything:
 1. `blueprint/WeilExplicitFormula.md`, all of it. §4 records Harald's decisions; §5 the IEANTN plan.
 2. In the IEANTN clone: `CLAUDE.md`, `CONTRIBUTING.md`, `docs/ARCHITECTURE.md`, `docs/NODES.md`, `docs/SOLUTIONS.md`.
 
-## Coordination (updated 27 November 2026, evening)
+## Coordination (updated 27 November 2026, late evening)
+
+**State.** Tasks 1, 2, 5 and 7 are done on the laptop: Comparator accepts the three solutions locally, with both
+kernels and the three permitted axioms (branches `contour-integration-solution` and `weil-explicit-formula` of
+`Garald1/IEANTN`, both on top of the reactivation commit `dc54f14`; that is `teorth/IEANTN#288`, green and
+mergeable). Two things are open: the `ZetaGoodHeights.v1` solution, ported from `e62f9988`, does not yet use its
+`ZetaLogDeriv.v1` hypothesis (switch it to `lemma_12_2_of`, from `4999d334`; keep the import); and Task 8, below.
 
 Another chat works on the same project, in branch `mv-lemma-12-14` of `Garald1/mathlib-at-ICERM26` (head `4999d334`:
 fourteen commits on top of `dirichlet-jordan` `90f274f8`, with the same Lean and Mathlib as the library; it merges
@@ -256,6 +262,36 @@ Then run Comparator locally (`scripts/verify-comparator.sh`, as `CONTRIBUTING.md
 verification workflow, any pull request, and the Palomar submission (`python scripts/ieantn.py spinoff ...`) are
 Harald's to start.
 
+**Palomar** (checked 27 November in `PalomarRegistry/PalomarSubmission`): new submissions need Lean v4.35.0-rc2 or
+later (`toolchains.json`), while IEANTN's pin is v4.34.0-rc2. So the spin-off waits for IEANTN to move to a newer
+Lean, or needs a port of its own. Every `.lean` file in a submitted repository must use the module system and have
+at most 10,000 lines (the Challenge at most 1,000 lines); `ResidueRectangle.lean` lost its `module` line for IEANTN
+and would need it back. Proof dependencies may be any public GitHub repositories pinned at full commits, and the
+repository root needs exactly one licence file.
+
+## Task 8 — a solution for `ZetaHadamard.v1` (when the other chat delivers)
+
+Harald decided (27 November) to prove IEANTN's `ZetaHadamard.v1.logDeriv_partial_fractions`, the partial-fraction
+expansion of ζ'/ζ in paired form, in the library and without the Hadamard product. The plan is
+`blueprint/proofs/PartialFractions.md`; the other chat writes it on `mv-lemma-12-14`. When it reports the commit:
+1. Port the new `PartialFractions.lean`, and the addition to `GoodHeights.lean`, into `Garald1/WeilExplicitFormula`
+   as in Task 1. Push.
+2. Add `Solutions/ZetaHadamard.v1/` as for the other solutions: `Solution.lean` with
+   ```lean
+   theorem ZetaHadamard.v1.challenge_logDeriv_partial_fractions :
+       ZetaHadamard.v1.logDeriv_partial_fractions :=
+     WeilExplicitFormula.logDeriv_partial_fractions
+   ```
+   (the node imports nothing, so the theorem has no hypotheses); `lakefile.toml` requiring IEANTN by path and
+   `WeilExplicitFormula` at the new commit; `lean-toolchain`; `comparator.json`. Build, check `#print axioms`, and
+   run Comparator locally.
+3. The node is Terence Tao's (`teorth/IEANTN#108`). In its `formalization.yaml`, change only what the solution makes
+   untrue: the `limitations` entries saying that a Lean proof needs the Hadamard factorization and that there is no
+   solution. Record `progress` with `ieantn.py progress --write`. Do not touch the statement or the designated
+   justification: the receipt does that.
+4. Commit on a new branch of `Garald1/IEANTN` based on `main` (this node does not depend on the other three). The
+   pull request is Harald's to start.
+
 ## Reporting
 
 At each stop: what was done; every change of meaning in a statement; what is next; questions. Keep it short; details
@@ -282,6 +318,6 @@ go in `STATUS.md` and the commit messages.
 > One statement deviates in form from the book: MV's hypothesis (12.21), ∫ e^{(1/2+δ₀)2π|x|} |dF(x)| < ∞, cannot be
 > written in Mathlib, so (12.20) and (12.21) are stated together as "x ↦ e^{(1/2+δ₀)2π|x|} F(x) is integrable and of
 > bounded variation on ℝ", which is equivalent; the solution proves the equivalence.
->
-> Unrelated small erratum: the `sources` note in `ZetaHadamard.v1/formalization.yaml` says "Theorem 10.13 is the
-> Hadamard product for xi"; in MV the Hadamard product is Theorem 10.12, and Theorem 10.13 is N(T+1) − N(T) ≪ log(T+2).
+
+(The erratum this draft used to end with, that the Hadamard product in MV is Theorem 10.12 and not 10.13, is now
+item 3 of `teorth/IEANTN#289`.)
